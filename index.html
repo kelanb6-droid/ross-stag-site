@@ -334,6 +334,44 @@
 </section>
 
 <section>
+  <h2 class="section-title fade-in">Book Activities</h2>
+  <div class="info-card fade-in" style="text-align:center;">
+    <p>Find and book amazing tours and activities in Barcelona through GetYourGuide.</p>
+    <a href="https://www.getyourguide.com/barcelona-l59/" target="_blank" style="display:inline-block; margin-top:10px; padding:10px 20px; background:var(--gold); color:var(--black); text-decoration:none; border-radius:2px;">Explore Barcelona Activities</a>
+  </div>
+</section>
+
+<section>
+  <h2 class="section-title fade-in">Activity Ideas</h2>
+  <div class="info-grid">
+    <div class="info-card fade-in"><h3>Food & Drink</h3><p>Tapas tour in Gothic Quarter, Paella cooking class, Wine tasting in Penedès region, Chocolate factory visit.</p></div>
+    <div class="info-card fade-in"><h3>Adventure</h3><p>Segway tour of the city, Kayaking in the Mediterranean, Hiking in Montserrat, Bike rental along the beach.</p></div>
+    <div class="info-card fade-in"><h3>Cultural</h3><p>Picasso Museum, Magic Fountain show, Flamenco show, Street art tour in El Raval.</p></div>
+    <div class="info-card fade-in"><h3>Relaxation</h3><p>Beach day at Barceloneta, Spa treatment, Park Güell picnic, Sunset cruise.</p></div>
+  </div>
+  <div class="info-card fade-in" style="margin-top:20px;">
+    <h3>Suggest an Idea</h3>
+    <input type="password" id="user-bday" placeholder="Your Birthday (MMDD)" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px;">
+    <input type="text" id="idea-input" placeholder="Your activity idea" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:60%;">
+    <button onclick="suggestIdea()" style="padding:8px 16px; background:var(--gold); color:var(--black); border:none; cursor:pointer; border-radius:2px;">Submit Idea</button>
+    <p id="idea-msg" style="margin-top:10px;"></p>
+  </div>
+  <div id="approved-ideas" style="margin-top:20px;"></div>
+</section>
+
+<section>
+  <h2 class="section-title fade-in">Best Man Approval</h2>
+  <div class="info-card fade-in" style="text-align:center;">
+    <input type="password" id="bm-bday" placeholder="Best Man Birthday" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px;">
+    <button onclick="accessApproval()" style="padding:8px 16px; background:var(--gold); color:var(--black); border:none; cursor:pointer; border-radius:2px;">Access</button>
+    <div id="approval-panel" style="display:none; margin-top:20px;">
+      <h3>Pending Ideas</h3>
+      <div id="pending-ideas"></div>
+    </div>
+  </div>
+</section>
+
+<section>
   <h2 class="section-title fade-in">Stag Do Poll</h2>
   <div class="info-card fade-in" style="text-align:center;">
     <h3>What's your favorite part of stag dos?</h3>
@@ -386,6 +424,90 @@
   }
   updateProgress();
   setInterval(updateProgress, 60000);
+
+  const groomBday = "170997";
+  const bmBday = "160698";
+  let pendingIdeas = JSON.parse(localStorage.getItem('pendingIdeas')) || [];
+  let approvedIdeas = JSON.parse(localStorage.getItem('approvedIdeas')) || [];
+
+  function suggestIdea() {
+    const bday = document.getElementById('user-bday').value;
+    const idea = document.getElementById('idea-input').value;
+    const msg = document.getElementById('idea-msg');
+    if (!bday || !idea) {
+      msg.textContent = "Please fill in both fields.";
+      msg.style.color = "#C9382A";
+      return;
+    }
+    if (bday === groomBday) {
+      msg.textContent = "The groom can't suggest ideas!";
+      msg.style.color = "#C9382A";
+      return;
+    }
+    pendingIdeas.push({bday, idea});
+    localStorage.setItem('pendingIdeas', JSON.stringify(pendingIdeas));
+    msg.textContent = "Idea submitted for approval!";
+    msg.style.color = "var(--gold)";
+    document.getElementById('user-bday').value = '';
+    document.getElementById('idea-input').value = '';
+  }
+
+  function accessApproval() {
+    const bday = document.getElementById('bm-bday').value;
+    if (bday === bmBday) {
+      document.getElementById('approval-panel').style.display = 'block';
+      displayPending();
+    } else {
+      alert("Wrong birthday!");
+    }
+  }
+
+  function displayPending() {
+    const container = document.getElementById('pending-ideas');
+    container.innerHTML = '';
+    pendingIdeas.forEach((item, index) => {
+      const div = document.createElement('div');
+      div.style.border = '1px solid rgba(212,168,67,.3)';
+      div.style.padding = '10px';
+      div.style.margin = '5px 0';
+      div.style.background = 'var(--dark)';
+      div.innerHTML = `<p><strong>Idea:</strong> ${item.idea}</p>
+      <button onclick="approve(${index})" style="margin-right:10px; padding:5px 10px; background:var(--gold); color:var(--black); border:none; cursor:pointer;">Approve</button>
+      <button onclick="reject(${index})" style="padding:5px 10px; background:#C9382A; color:white; border:none; cursor:pointer;">Reject</button>`;
+      container.appendChild(div);
+    });
+  }
+
+  function approve(index) {
+    const idea = pendingIdeas.splice(index, 1)[0];
+    approvedIdeas.push(idea);
+    localStorage.setItem('pendingIdeas', JSON.stringify(pendingIdeas));
+    localStorage.setItem('approvedIdeas', JSON.stringify(approvedIdeas));
+    displayPending();
+    displayApproved();
+  }
+
+  function reject(index) {
+    pendingIdeas.splice(index, 1);
+    localStorage.setItem('pendingIdeas', JSON.stringify(pendingIdeas));
+    displayPending();
+  }
+
+  function displayApproved() {
+    const container = document.getElementById('approved-ideas');
+    container.innerHTML = '<h3>Approved Ideas</h3>';
+    approvedIdeas.forEach(item => {
+      const div = document.createElement('div');
+      div.style.border = '1px solid rgba(212,168,67,.3)';
+      div.style.padding = '10px';
+      div.style.margin = '5px 0';
+      div.style.background = 'var(--dark)';
+      div.innerHTML = `<p>${item.idea}</p>`;
+      container.appendChild(div);
+    });
+  }
+
+  displayApproved();
 </script>
 </body>
 </html>
