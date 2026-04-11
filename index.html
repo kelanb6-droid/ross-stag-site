@@ -624,7 +624,7 @@
 </section>
 
 <p id="groom-schedule-locked-msg" style="display:none; max-width:900px; margin:16px auto 0; padding:0 24px; font-size:13px; opacity:.75;">
-  Ross: the detailed schedule unlocks automatically on 3 May 2026.
+  Ross: the detailed schedule unlocks at 04:00 on 3 May 2026. Time left: <strong id="groom-schedule-countdown">--</strong>
 </p>
 
 <section>
@@ -1239,9 +1239,27 @@
     return new Date().toISOString().slice(0, 10);
   }
 
+  function getGroomScheduleUnlockAt() {
+    return new Date('2026-05-03T04:00:00').getTime();
+  }
+
   function canGroomViewSchedule() {
-    const unlockAt = new Date('2026-05-03T00:00:00').getTime();
-    return Date.now() >= unlockAt;
+    return Date.now() >= getGroomScheduleUnlockAt();
+  }
+
+  function updateGroomScheduleCountdown() {
+    const countdownEl = document.getElementById('groom-schedule-countdown');
+    if (!countdownEl) return;
+    const diff = getGroomScheduleUnlockAt() - Date.now();
+    if (diff <= 0) {
+      countdownEl.textContent = 'Unlocked now';
+      return;
+    }
+    const days = Math.floor(diff / 864e5);
+    const hours = Math.floor((diff % 864e5) / 36e5);
+    const mins = Math.floor((diff % 36e5) / 6e4);
+    const secs = Math.floor((diff % 6e4) / 1e3);
+    countdownEl.textContent = days + 'd ' + String(hours).padStart(2, '0') + 'h ' + String(mins).padStart(2, '0') + 'm ' + String(secs).padStart(2, '0') + 's';
   }
 
   function getCurrentCrewKey() {
@@ -1925,6 +1943,9 @@
     if (secretOptional) secretOptional.style.display = loggedIn ? 'block' : 'none';
     if (tripScheduleSection) tripScheduleSection.style.display = groomScheduleLocked ? 'none' : 'block';
     if (groomScheduleLockedMsg) groomScheduleLockedMsg.style.display = groomScheduleLocked ? 'block' : 'none';
+    if (groomScheduleLocked) {
+      updateGroomScheduleCountdown();
+    }
     if (loginOverlay) loginOverlay.style.display = loggedIn ? 'none' : 'flex';
     if (logoutButton) logoutButton.style.display = loggedIn ? 'block' : 'none';
     document.body.classList.toggle('overlay-active', !loggedIn);
@@ -2593,6 +2614,8 @@
   populateExpensePayerOptions();
   renderExpenseBoard();
   renderPollBoard();
+  setInterval(updateGroomScheduleCountdown, 1000);
+  updateGroomScheduleCountdown();
   if (punishmentHistory.length) {
     const result = document.getElementById('punishment-result');
     const history = document.getElementById('punishment-history');
