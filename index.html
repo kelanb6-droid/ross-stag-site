@@ -28,6 +28,16 @@
   }
   .hero::before { content:''; position:absolute; inset:0;
     background: url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0 L60 30 L30 60 L0 30Z' fill='none' stroke='%23D4A84310' stroke-width='.5'/%3E%3C/svg%3E"); opacity:.4; }
+  
+  /* Light Theme - Hero */
+  .light-theme .hero {
+    background: radial-gradient(ellipse at 30% 20%, rgba(164,23,49,.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 80%, rgba(244,164,35,.06) 0%, transparent 50%), var(--black);
+  }
+  .light-theme .hero::before {
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0 L60 30 L30 60 L0 30Z' fill='none' stroke='%231A1A1A15' stroke-width='.5'/%3E%3C/svg%3E");
+    opacity: .3;
+  }
   .hero-content { position: relative; z-index: 1; }
   .hero-emoji { font-size: 56px; margin-bottom: -6px; animation: fadeDown .8s ease-out; filter: drop-shadow(0 0 30px rgba(212,168,67,.3)); }
   .hero h1 { font-family:'Bebas Neue',sans-serif; font-size:clamp(64px,16vw,180px); letter-spacing:10px; color:var(--gold); line-height:.85; animation:fadeUp .8s ease-out; text-shadow:0 0 60px rgba(212,168,67,.2); }
@@ -168,6 +178,21 @@
     transform: scale(0.98);
   }
   
+  /* Welcome Banner */
+  #welcome-banner {
+    animation: slideDown .5s ease-out;
+  }
+  @keyframes slideDown {
+    from {
+      transform: translateY(-100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  
   /* Primary buttons (gold background) */
   button[style*="background:var(--gold)"],
   button[style*="background: var(--gold)"] {
@@ -194,8 +219,205 @@
     --accent: #C9382A;
     --sun: #F4A423;
   }
-  .light-theme body { background: var(--black); color: var(--cream); }
-  .light-theme .info-card { background: var(--dark); border-color: rgba(212,168,67,.2); }
+  .light-theme body { 
+    background: var(--black); 
+    color: var(--cream); 
+  }
+  
+  /* Light Theme - Cards */
+  .light-theme .countdown { 
+    border-color: rgba(0,0,0,.1);
+    box-shadow: 0 8px 32px rgba(0,0,0,.08);
+  }
+  .light-theme .lad-card { 
+    background: var(--dark);
+    border-color: rgba(0,0,0,.15);
+    box-shadow: 0 4px 16px rgba(0,0,0,.1);
+  }
+  .light-theme .lad-card:hover { 
+    box-shadow: 0 12px 28px rgba(0,0,0,.15);
+  }
+  .light-theme .flight-card { 
+    background: var(--dark);
+    border-color: rgba(0,0,0,.12);
+    box-shadow: 0 4px 16px rgba(0,0,0,.1);
+  }
+  .light-theme .hotel-card { 
+    background: var(--dark);
+    border-color: rgba(0,0,0,.12);
+    box-shadow: 0 4px 16px rgba(0,0,0,.1);
+  }
+  .light-theme .hotel-detail-item { 
+    background: rgba(0,0,0,.04);
+    border-color: rgba(0,0,0,.12);
+  }
+  .light-theme .hotel-detail-item:hover { 
+    background: rgba(0,0,0,.06);
+    border-color: rgba(212,168,67,.3);
+  }
+  .light-theme .cost-card { 
+    background: var(--dark);
+    border-color: rgba(0,0,0,.12);
+    box-shadow: 0 4px 16px rgba(0,0,0,.1);
+  }
+  .light-theme .rule-card { 
+    background: var(--dark);
+    border-color: rgba(0,0,0,.15);
+    box-shadow: 0 4px 16px rgba(0,0,0,.1);
+  }
+  .light-theme .rule-card:hover { 
+    box-shadow: 0 8px 24px rgba(0,0,0,.12);
+  }
+  .light-theme .info-card { 
+    background: var(--dark);
+    border-color: rgba(0,0,0,.12);
+    box-shadow: 0 4px 16px rgba(0,0,0,.1);
+  }
+  .light-theme .info-card:hover { 
+    box-shadow: 0 8px 24px rgba(0,0,0,.15);
+  }
+  .light-theme .restaurant-card {
+    background: var(--dark);
+    border-color: rgba(0,0,0,.12);
+    box-shadow: 0 4px 16px rgba(0,0,0,.1);
+  }
+  .light-theme .restaurant-card:hover { 
+    box-shadow: 0 12px 32px rgba(0,0,0,.15);
+  }
+  
+  /* Light Theme - Form Elements */
+  .light-theme input[type="text"],
+  .light-theme input[type="password"],
+  .light-theme select,
+  .light-theme textarea {
+    background: rgba(0,0,0,.05);
+    border-color: rgba(0,0,0,.15);
+    color: var(--cream);
+  }
+  .light-theme input[type="text"]:focus,
+  .light-theme input[type="password"]:focus,
+  .light-theme select:focus,
+  .light-theme textarea:focus {
+    background: rgba(0,0,0,.07);
+    border-color: var(--gold);
+    box-shadow: 0 0 16px rgba(212,168,67,.15);
+  }
+  
+  /* Light Theme - Login Overlay */
+  .light-theme #login-overlay {
+    background: rgba(245,245,245,.96);
+  }
+  .light-theme #login-overlay .login-box {
+    background: rgba(255,255,255,.95);
+    border-color: rgba(0,0,0,.15);
+  }
+  
+  /* Light Theme - Schedule */
+  .light-theme .schedule-item {
+    border-bottom-color: rgba(0,0,0,.08);
+  }
+  
+  /* Light Theme - Footer */
+  .light-theme footer {
+    border-top-color: rgba(0,0,0,.12);
+    background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,.02));
+  }
+  
+  /* Light Theme - Section Styling */
+  .light-theme .section-title {
+    color: #C9382A;
+  }
+  .light-theme .section-title::after {
+    background: #C9382A;
+  }
+  .light-theme .countdown-label {
+    color: rgba(26,26,26,.6);
+  }
+  .light-theme .countdown-num {
+    color: #D4A843;
+  }
+  .light-theme .countdown-unit {
+    color: rgba(26,26,26,.5);
+  }
+  .light-theme .flight-direction {
+    color: #C9382A;
+  }
+  .light-theme .flight-meta {
+    color: rgba(26,26,26,.55);
+  }
+  .light-theme .flight-ref {
+    color: rgba(26,26,26,.35);
+  }
+  .light-theme .hotel-name {
+    color: #D4A843;
+  }
+  .light-theme .hotel-address {
+    color: rgba(26,26,26,.55);
+  }
+  .light-theme .hotel-detail-label {
+    color: rgba(26,26,26,.5);
+  }
+  .light-theme .hotel-detail-value {
+    color: var(--cream);
+  }
+  .light-theme .cost-total-label {
+    color: rgba(26,26,26,.5);
+  }
+  .light-theme .cost-total {
+    color: #D4A843;
+  }
+  .light-theme .cost-per-person {
+    color: rgba(26,26,26,.55);
+  }
+  .light-theme .cost-row-label {
+    color: rgba(26,26,26,.55);
+  }
+  .light-theme .cost-row-value {
+    color: var(--cream);
+  }
+  .light-theme .schedule-item {
+    border-bottom-color: rgba(26,26,26,.08);
+  }
+  .light-theme .schedule-time {
+    color: #D4A843;
+  }
+  .light-theme .schedule-info h3 {
+    color: var(--cream);
+  }
+  .light-theme .schedule-info p {
+    color: rgba(26,26,26,.55);
+  }
+  .light-theme .schedule-info a {
+    color: #D4A843;
+  }
+  .light-theme .rule-num {
+    color: #C9382A;
+  }
+  .light-theme .rule-card h3 {
+    color: #D4A843;
+  }
+  .light-theme .rule-card p {
+    color: rgba(26,26,26,.55);
+  }
+  .light-theme .info-card h3 {
+    color: #D4A843;
+  }
+  .light-theme .info-card p,
+  .light-theme .info-card a {
+    color: rgba(26,26,26,.65);
+  }
+  .light-theme .info-card a {
+    color: #D4A843;
+  }
+  .light-theme .restaurant-meta {
+    color: rgba(26,26,26,.5);
+  }
+  .light-theme .restaurant-body p {
+    color: rgba(26,26,26,.7);
+  }
+  .light-theme .restaurant-link {
+    color: #D4A843;
+  }
 
   body.overlay-active { overflow: hidden; }
 
@@ -209,6 +431,7 @@
     z-index: 9999;
     color: var(--cream);
     padding: 24px;
+    backdrop-filter: blur(4px);
   }
   #login-overlay .login-box {
     max-width: 360px;
@@ -216,8 +439,9 @@
     background: rgba(26,26,26,.98);
     border: 1px solid rgba(212,168,67,.16);
     padding: 28px;
-    border-radius: 10px;
+    border-radius: 12px;
     text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,.5);
   }
   #login-overlay input {
     width: 100%;
@@ -257,9 +481,26 @@
 </head>
 <body>
 
+<div id="login-overlay">
+  <div class="login-box">
+    <h2>Crew Login</h2>
+    <p>Enter your name and birthday to unlock the lads-only schedule.</p>
+    <input type="text" id="crew-login-name" placeholder="Your name or nickname" style="margin-top:12px;">
+    <input type="password" id="crew-login-bday" placeholder="Birthday (DDMMYY)">
+    <button onclick="crewLogin()" style="margin-top:8px;">Unlock</button>
+    <p id="crew-login-msg" style="margin-top:14px; opacity:.85;"></p>
+  </div>
+</div>
+
+<div id="welcome-banner" style="display:none; position:fixed; top:0; left:0; right:0; background:linear-gradient(135deg, rgba(212,168,67,.95), rgba(244,164,35,.95)); padding:20px; text-align:center; z-index:9998; box-shadow:0 4px 16px rgba(212,168,67,.3); animation:slideDown .5s ease-out;">
+  <h3 id="welcome-text" style="color:#0A0A0A; font-family:'Bebas Neue',sans-serif; letter-spacing:2px; margin:0; font-size:24px;"></h3>
+  <p id="welcome-subtitle" style="color:rgba(10,10,10,.8); margin:6px 0 0 0; font-size:13px;"></p>
+</div>
+
 <div class="hero">
   <div class="hero-content">
     <button id="theme-toggle" onclick="toggleTheme()" style="position:absolute; top:20px; right:20px; padding:10px; background:var(--gold); color:var(--black); border:none; cursor:pointer; border-radius:50%; width:50px; height:50px; font-size:20px;">🌙</button>
+    <button id="crew-logout-btn" onclick="crewLogout()" style="position:fixed; top:20px; right:90px; padding:10px; background:var(--gold); color:var(--black); border:none; cursor:pointer; border-radius:50%; width:48px; height:48px; font-size:18px; display:none; z-index:10001;">⏏</button>
     <div class="hero-emoji">&#127466;&#127480;</div>
     <h1>BARCELONA</h1>
     <h2>Ross's Stag Do</h2>
@@ -392,6 +633,10 @@
     <div class="schedule-time">4 May<br>Day 2</div>
     <div class="schedule-info"><h3>Big Activity Day</h3><p>Late breakfast, daytime activity window, then dinner and main night session.</p></div>
   </div>
+  <div class="schedule-item fade-in" id="crew-only-booking" style="display:none;">
+    <div class="schedule-time">4 May<br>Optional</div>
+    <div class="schedule-info"><h3>Optional Activity Slot</h3><p>Free block for group plans, weather backup, or extra activities.</p></div>
+  </div>
   <div class="schedule-item fade-in">
     <div class="schedule-time">5 May<br>Day 3</div>
     <div class="schedule-info"><h3>Recovery + Flex Plans</h3><p>Brunch, optional football/sightseeing block, final group meal and easy last night.</p></div>
@@ -400,6 +645,7 @@
     <div class="schedule-time">6 May<br>14:00</div>
     <div class="schedule-info"><h3>Return Flight</h3><p>Transfer to BCN airport, EasyJet EZY3002 departs 14:00 and lands Belfast 15:55 local.</p></div>
   </div>
+  <div id="approved-schedule-items" style="margin-top:10px;"></div>
 </section>
 
 <section>
@@ -645,7 +891,53 @@
   <p class="fade-in" style="font-size:12px; opacity:.55; margin-top:16px; line-height:1.6;">All prices are typical 2025-2026 ranges and can move with demand. For groups of 6, booking 1-2 weeks ahead usually gets better slots and bundle rates.</p>
 </section>
 
+<section id="suggestion-section" style="display:none;">
+  <h2 class="section-title fade-in">Suggest a Challenge</h2>
+  <div class="info-card fade-in" style="margin-top:20px; text-align:center;">
+    <h3>Submit Your Challenge</h3>
+    <p style="opacity:.7; margin-bottom:12px;">Crew suggestions are moderated by Joshua before going live.</p>
+    <input type="text" id="challenge-title" placeholder="Challenge title" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:60%;">
+    <select id="challenge-type" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:29%;">
+      <option value="Drinking">Drinking</option>
+      <option value="Dares">Dares</option>
+      <option value="Team">Team</option>
+      <option value="Chill">Chill</option>
+    </select>
+    <select id="challenge-difficulty" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:29%;">
+      <option value="Easy">Easy</option>
+      <option value="Medium">Medium</option>
+      <option value="Chaos">Chaos</option>
+    </select>
+    <textarea id="challenge-notes" rows="3" placeholder="Optional details..." style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:60%;"></textarea>
+    <button onclick="suggestChallenge()" style="padding:8px 16px; background:var(--gold); color:var(--black); border:none; cursor:pointer; border-radius:2px;">Submit Challenge</button>
+    <p id="challenge-msg" style="margin-top:10px;"></p>
+  </div>
+  <div class="info-card fade-in" style="margin-top:20px; text-align:center;">
+    <h3>Suggest a Schedule Item</h3>
+    <p style="opacity:.7; margin-bottom:12px;">Suggest a plan entry with a time, details and optional link. Joshua will approve it.</p>
+    <input type="text" id="schedule-title" placeholder="Title (e.g. Sunset Rooftop Drinks)" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:60%;">
+    <input type="text" id="schedule-day" placeholder="Day/Date (e.g. 4 May)" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:29%;">
+    <input type="text" id="schedule-time" placeholder="Time (e.g. 15:30)" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:29%;">
+    <textarea id="schedule-details" rows="3" placeholder="Details..." style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:60%;"></textarea>
+    <input type="url" id="schedule-link" placeholder="Optional link (https://...)" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:60%;">
+    <button onclick="suggestScheduleItem()" style="padding:8px 16px; background:var(--gold); color:var(--black); border:none; cursor:pointer; border-radius:2px;">Submit Schedule Item</button>
+    <p id="schedule-suggestion-msg" style="margin-top:10px;"></p>
+  </div>
+  <div id="approved-challenges" style="margin-top:20px;"></div>
+</section>
 
+<section id="bestman-approval-section" style="display:none;">
+  <h2 class="section-title fade-in">Best Man Approval</h2>
+  <div class="info-card fade-in" style="text-align:center;">
+    <button onclick="accessApproval()" style="padding:8px 16px; background:var(--gold); color:var(--black); border:none; cursor:pointer; border-radius:2px;">Access</button>
+    <div id="approval-panel" style="display:none; margin-top:20px;">
+      <h3>Pending Challenges</h3>
+      <div id="pending-challenges"></div>
+      <h3 style="margin-top:18px;">Pending Schedule Suggestions</h3>
+      <div id="pending-schedule-suggestions"></div>
+    </div>
+  </div>
+</section>
 
 <section>
   <h2 class="section-title fade-in">Stag Do Drinking Game</h2>
@@ -787,8 +1079,17 @@
   updateProgress();
   setInterval(updateProgress, 60000);
 
-  const PUBLIC_MODE = true;
-  let crewBdayState = 'public';
+  const groomBday = '170997';
+  const bmBday = '180997';
+  const allowedCrewBdays = new Set([
+    bmBday,
+    '270597',
+    '140697',
+    '201197',
+    '080997',
+    '220997'
+  ]);
+  let crewBdayState = '';
 
   function supportsLocalStorage() {
     try { return typeof localStorage !== 'undefined' && localStorage !== null; } catch (e) { return false; }
@@ -824,6 +1125,24 @@
     localStorage.setItem(key, JSON.stringify(value));
   }
 
+  function getStoredItem(key) {
+    if (!supportsLocalStorage()) return null;
+    try {
+      return localStorage.getItem(key);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function setStoredItem(key, value) {
+    if (!supportsLocalStorage()) return;
+    try {
+      localStorage.setItem(key, value);
+    } catch (e) {
+      // Ignore storage write failures so core UI keeps working.
+    }
+  }
+
   function getCrewBday() {
     // Keep access state in-memory only to reduce persistence abuse.
     return crewBdayState;
@@ -838,6 +1157,9 @@
   let challengeVoteLog = loadJSON('challengeVoteLog', {});
   let challengeReportLog = loadJSON('challengeReportLog', {});
   let challengeSubmissionLog = loadJSON('challengeSubmissionLog', {});
+  let scheduleSubmissionLog = loadJSON('scheduleSubmissionLog', {});
+  let pendingScheduleSuggestions = loadJSON('pendingScheduleSuggestions', []);
+  let approvedScheduleSuggestions = loadJSON('approvedScheduleSuggestions', []);
   let shownChallengeIds = [];
   let completedChallengeIds = loadJSON('completedChallengeIds', []);
   let punishmentHistory = loadJSON('punishmentHistory', []);
@@ -854,16 +1176,23 @@
     return String(value || '').toLowerCase().trim().replace(/\s+/g, ' ');
   }
 
+  function normalizeURL(value) {
+    const raw = String(value || '').trim();
+    if (!raw) return '';
+    if (/^https?:\/\//i.test(raw)) return raw;
+    return 'https://' + raw;
+  }
+
   function getTodayKey() {
     return new Date().toISOString().slice(0, 10);
   }
 
   function getCurrentCrewKey() {
-    return 'public';
+    return getCrewBday();
   }
 
   function isAllowedCrewBday(bday) {
-    return PUBLIC_MODE ? true : false;
+    return allowedCrewBdays.has(String(bday || ''));
   }
 
   function saveChallengeData() {
@@ -872,6 +1201,9 @@
     saveJSON('challengeVoteLog', challengeVoteLog);
     saveJSON('challengeReportLog', challengeReportLog);
     saveJSON('challengeSubmissionLog', challengeSubmissionLog);
+    saveJSON('scheduleSubmissionLog', scheduleSubmissionLog);
+    saveJSON('pendingScheduleSuggestions', pendingScheduleSuggestions);
+    saveJSON('approvedScheduleSuggestions', approvedScheduleSuggestions);
     saveJSON('completedChallengeIds', completedChallengeIds);
     saveJSON('punishmentHistory', punishmentHistory);
     saveJSON('teamBattle', teamBattle);
@@ -1085,32 +1417,341 @@
     displayPendingChallenges();
   }
 
+  function suggestScheduleItem() {
+    const titleInput = document.getElementById('schedule-title');
+    const dayInput = document.getElementById('schedule-day');
+    const timeInput = document.getElementById('schedule-time');
+    const detailsInput = document.getElementById('schedule-details');
+    const linkInput = document.getElementById('schedule-link');
+    const msg = document.getElementById('schedule-suggestion-msg');
+    const crew = getCurrentCrewKey();
+
+    if (!crew) {
+      msg.textContent = 'Log in with your crew access code to submit schedule items.';
+      msg.style.color = '#C9382A';
+      return;
+    }
+
+    const title = titleInput.value.trim();
+    const day = dayInput.value.trim();
+    const time = timeInput.value.trim();
+    const details = detailsInput.value.trim();
+    const link = normalizeURL(linkInput.value);
+
+    if (title.length < 3) {
+      msg.textContent = 'Add a title (at least 3 characters).';
+      msg.style.color = '#C9382A';
+      return;
+    }
+    if (day.length < 2 || time.length < 2 || details.length < 3) {
+      msg.textContent = 'Add day, time, and details before submitting.';
+      msg.style.color = '#C9382A';
+      return;
+    }
+
+    const normalized = normalizeTitle(title + '|' + day + '|' + time);
+    const duplicatePending = pendingScheduleSuggestions.some(item => normalizeTitle(item.title + '|' + item.day + '|' + item.time) === normalized);
+    const duplicateApproved = approvedScheduleSuggestions.some(item => normalizeTitle(item.title + '|' + item.day + '|' + item.time) === normalized);
+    if (duplicatePending || duplicateApproved) {
+      msg.textContent = 'That schedule item already exists.';
+      msg.style.color = '#C9382A';
+      return;
+    }
+
+    const todayKey = getTodayKey();
+    const submissionKey = crew + ':' + todayKey;
+    const submissionsToday = scheduleSubmissionLog[submissionKey] || 0;
+    if (submissionsToday >= 4) {
+      msg.textContent = 'Daily limit reached (4 schedule items per crew member).';
+      msg.style.color = '#C9382A';
+      return;
+    }
+
+    scheduleSubmissionLog[submissionKey] = submissionsToday + 1;
+    pendingScheduleSuggestions.push({
+      id: Date.now().toString() + Math.random().toString(36).slice(2, 7),
+      title,
+      day,
+      time,
+      details,
+      link,
+      suggestedBy: crew,
+      createdAt: Date.now()
+    });
+    saveChallengeData();
+
+    msg.textContent = 'Schedule suggestion submitted for best man approval.';
+    msg.style.color = 'var(--gold)';
+    titleInput.value = '';
+    dayInput.value = '';
+    timeInput.value = '';
+    detailsInput.value = '';
+    linkInput.value = '';
+
+    displayPendingScheduleSuggestions();
+  }
+
+  function displayPendingScheduleSuggestions() {
+    const container = document.getElementById('pending-schedule-suggestions');
+    if (!container) return;
+    clearElement(container);
+
+    if (!pendingScheduleSuggestions.length) {
+      container.innerHTML = '<p style="opacity:.6;">No pending schedule suggestions.</p>';
+      return;
+    }
+
+    pendingScheduleSuggestions
+      .sort((a, b) => b.createdAt - a.createdAt)
+      .forEach(item => {
+        const div = document.createElement('div');
+        div.style.border = '1px solid rgba(212,168,67,.3)';
+        div.style.padding = '12px';
+        div.style.margin = '8px 0';
+        div.style.background = 'var(--dark)';
+
+        const title = document.createElement('p');
+        const strong = document.createElement('strong');
+        strong.textContent = item.title;
+        title.appendChild(strong);
+        div.appendChild(title);
+
+        const meta = document.createElement('p');
+        meta.style.opacity = '.7';
+        meta.style.fontSize = '12px';
+        meta.textContent = item.day + ' • ' + item.time + ' • by ' + item.suggestedBy;
+        div.appendChild(meta);
+
+        const details = document.createElement('p');
+        details.style.opacity = '.75';
+        details.textContent = item.details;
+        div.appendChild(details);
+
+        if (item.link) {
+          const linkWrap = document.createElement('p');
+          const a = document.createElement('a');
+          a.href = item.link;
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+          a.textContent = 'Open link';
+          linkWrap.appendChild(a);
+          div.appendChild(linkWrap);
+        }
+
+        div.appendChild(makeActionButton(
+          'Approve',
+          'margin-right:10px; padding:6px 12px; background:var(--gold); color:var(--black); border:none; cursor:pointer;',
+          function () { approveScheduleSuggestion(item.id); }
+        ));
+
+        div.appendChild(makeActionButton(
+          'Reject',
+          'padding:6px 12px; background:#C9382A; color:white; border:none; cursor:pointer;',
+          function () { rejectScheduleSuggestion(item.id); }
+        ));
+
+        container.appendChild(div);
+      });
+  }
+
+  function approveScheduleSuggestion(id) {
+    const index = pendingScheduleSuggestions.findIndex(item => item.id === id);
+    if (index === -1) return;
+    const entry = pendingScheduleSuggestions.splice(index, 1)[0];
+    approvedScheduleSuggestions.push(entry);
+    saveChallengeData();
+    displayPendingScheduleSuggestions();
+    displayApprovedScheduleSuggestions();
+  }
+
+  function rejectScheduleSuggestion(id) {
+    pendingScheduleSuggestions = pendingScheduleSuggestions.filter(item => item.id !== id);
+    saveChallengeData();
+    displayPendingScheduleSuggestions();
+  }
+
+  function displayApprovedScheduleSuggestions() {
+    const container = document.getElementById('approved-schedule-items');
+    if (!container) return;
+    clearElement(container);
+
+    if (!approvedScheduleSuggestions.length) return;
+
+    approvedScheduleSuggestions
+      .sort((a, b) => a.createdAt - b.createdAt)
+      .forEach(item => {
+        const row = document.createElement('div');
+        row.className = 'schedule-item fade-in visible';
+
+        const timeCol = document.createElement('div');
+        timeCol.className = 'schedule-time';
+        timeCol.textContent = item.day + '\n' + item.time;
+        timeCol.style.whiteSpace = 'pre-line';
+
+        const infoCol = document.createElement('div');
+        infoCol.className = 'schedule-info';
+
+        const h3 = document.createElement('h3');
+        h3.textContent = item.title;
+        infoCol.appendChild(h3);
+
+        const p = document.createElement('p');
+        p.textContent = item.details;
+        infoCol.appendChild(p);
+
+        if (item.link) {
+          const linkP = document.createElement('p');
+          const a = document.createElement('a');
+          a.href = item.link;
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+          a.textContent = 'View link';
+          linkP.appendChild(a);
+          infoCol.appendChild(linkP);
+        }
+
+        row.appendChild(timeCol);
+        row.appendChild(infoCol);
+        container.appendChild(row);
+      });
+  }
+
   function accessApproval() {
-    alert('Approval mode is disabled on the public site.');
+    const crew = getCrewBday();
+    if (crew !== bmBday) {
+      alert('Admin access is for Joshua only.');
+      return;
+    }
+    const approvalPanel = document.getElementById('approval-panel');
+    if (approvalPanel) approvalPanel.style.display = 'block';
+    displayPendingChallenges();
+    displayPendingScheduleSuggestions();
   }
 
   function updateCrewAccess() {
+    let crewBday = getCrewBday();
     const suggestionSection = document.getElementById('suggestion-section');
     const bestmanSection = document.getElementById('bestman-approval-section');
     const secretBooking = document.getElementById('crew-only-booking');
     const loginOverlay = document.getElementById('login-overlay');
     const logoutButton = document.getElementById('crew-logout-btn');
-    if (suggestionSection) suggestionSection.style.display = 'none';
-    if (bestmanSection) bestmanSection.style.display = 'none';
-    if (secretBooking) secretBooking.style.display = 'none';
-    if (loginOverlay) loginOverlay.style.display = 'none';
-    if (logoutButton) logoutButton.style.display = 'none';
-    document.body.classList.remove('overlay-active');
+    if (!isAllowedCrewBday(crewBday)) {
+      setCrewBday('');
+      crewBday = '';
+    }
+    const loggedIn = crewBday && crewBday !== '';
+    const isAdmin = crewBday === bmBday;
+    if (suggestionSection) suggestionSection.style.display = loggedIn ? 'block' : 'none';
+    if (bestmanSection) bestmanSection.style.display = isAdmin ? 'block' : 'none';
+    if (secretBooking) secretBooking.style.display = loggedIn ? 'block' : 'none';
+    if (loginOverlay) loginOverlay.style.display = loggedIn ? 'none' : 'flex';
+    if (logoutButton) logoutButton.style.display = loggedIn ? 'block' : 'none';
+    document.body.classList.toggle('overlay-active', !loggedIn);
+    const approvalPanel = document.getElementById('approval-panel');
+    if (isAdmin) {
+      if (approvalPanel) approvalPanel.style.display = 'block';
+      displayPendingChallenges();
+      displayPendingScheduleSuggestions();
+    } else {
+      if (approvalPanel) approvalPanel.style.display = 'none';
+    }
+    if (loggedIn) displayApprovedChallenges();
+    displayApprovedScheduleSuggestions();
   }
 
   function crewLogin() {
-    setCrewBday('public');
+    const nameField = document.getElementById('crew-login-name');
+    const bdayField = document.getElementById('crew-login-bday');
+    const name = nameField.value.trim();
+    const bday = bdayField.value.trim();
+    const msg = document.getElementById('crew-login-msg');
+    
+    if (!name || name.length < 2) {
+      msg.textContent = 'Enter your name or nickname.';
+      msg.style.color = '#C9382A';
+      return;
+    }
+    if (!/^[0-9]{6}$/.test(bday)) {
+      msg.textContent = 'Enter your birthday as DDMMYY.';
+      msg.style.color = '#C9382A';
+      return;
+    }
+    if (bday === groomBday) {
+      msg.textContent = 'Ross cannot unlock this section. Enter a crew birthday.';
+      msg.style.color = '#C9382A';
+      setCrewBday('');
+      bdayField.value = '';
+      updateCrewAccess();
+      return;
+    }
+    if (!isAllowedCrewBday(bday)) {
+      msg.textContent = 'Access code not recognized. Ask Joshua to add it.';
+      msg.style.color = '#C9382A';
+      return;
+    }
+    
+    setCrewBday(bday);
+    saveCrewName(name);
+    bdayField.value = '';
+    nameField.value = '';
+    msg.textContent = 'Welcome, ' + name + '! Unlocking the lads-only schedule...';
+    msg.style.color = 'var(--gold)';
     updateCrewAccess();
+    showWelcomeBanner(name);
   }
 
   function crewLogout() {
-    setCrewBday('public');
+    setCrewBday('');
+    const msg = document.getElementById('crew-login-msg');
+    if (msg) {
+      msg.textContent = 'Crew section locked.';
+      msg.style.color = '#C9382A';
+    }
     updateCrewAccess();
+  }
+  
+  function saveCrewName(name) {
+    setStoredItem('crewName', name);
+  }
+  
+  function getCrewName() {
+    return getStoredItem('crewName') || 'Lad';
+  }
+  
+  function showWelcomeBanner(name) {
+    const banner = document.getElementById('welcome-banner');
+    const welcomeText = document.getElementById('welcome-text');
+    const welcomeSubtitle = document.getElementById('welcome-subtitle');
+    
+    if (!banner) return;
+    
+    const welcomeMessages = [
+      'You legend!',
+      'Vamos!',
+      'Let\'s go, lad!',
+      'The crew awaits!',
+      'Time for chaos!',
+      'Buckle up!',
+      'Welcome back!',
+      'It\'s on!'
+    ];
+    
+    const randomMessage = welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
+    
+    welcomeText.textContent = 'Welcome, ' + name + '! ' + randomMessage;
+    welcomeSubtitle.textContent = 'Secret schedule unlocked • Challenges available • Lads only';
+    
+    banner.style.display = 'block';
+    
+    setTimeout(() => {
+      banner.style.opacity = '0';
+      banner.style.transition = 'opacity .5s ease-out';
+      setTimeout(() => {
+        banner.style.display = 'none';
+        banner.style.opacity = '1';
+        banner.style.transition = 'all .3s ease';
+      }, 500);
+    }, 3500);
   }
 
   updateCrewAccess();
@@ -1272,7 +1913,7 @@
 
   displayApprovedChallenges();
 
-  const pollResults = safeJSONParse(localStorage.getItem('pollResults'), {
+  const pollResults = safeJSONParse(getStoredItem('pollResults'), {
     drinking: 0,
     adventures: 0,
     bonding: 0,
@@ -1282,7 +1923,7 @@
   function vote(choice) {
     if (!pollResults.hasOwnProperty(choice)) return;
     pollResults[choice] += 1;
-    localStorage.setItem('pollResults', JSON.stringify(pollResults));
+    setStoredItem('pollResults', JSON.stringify(pollResults));
     updatePollDisplay();
   }
 
@@ -1340,14 +1981,14 @@
     if (body.classList.contains('light-theme')) {
       body.classList.remove('light-theme');
       button.textContent = '🌙';
-      localStorage.setItem('theme', 'dark');
+      setStoredItem('theme', 'dark');
     } else {
       body.classList.add('light-theme');
       button.textContent = '☀️';
-      localStorage.setItem('theme', 'light');
+      setStoredItem('theme', 'light');
     }
   }
-  if (localStorage.getItem('theme') === 'light') {
+  if (getStoredItem('theme') === 'light') {
     document.body.classList.add('light-theme');
     document.getElementById('theme-toggle').textContent = '☀️';
   }
@@ -1440,7 +2081,7 @@
   ];
   function initPackingList() {
     const container = document.getElementById('packing-list');
-    const checked = safeJSONParse(localStorage.getItem('packingChecked'), {});
+    const checked = safeJSONParse(getStoredItem('packingChecked'), {});
     packingItems.forEach(item => {
       const div = document.createElement('div');
       div.style.display = 'flex';
@@ -1452,7 +2093,7 @@
       checkbox.checked = checked[item] || false;
       checkbox.onchange = () => {
         checked[item] = checkbox.checked;
-        localStorage.setItem('packingChecked', JSON.stringify(checked));
+        setStoredItem('packingChecked', JSON.stringify(checked));
       };
       const label = document.createElement('label');
       label.htmlFor = item;
