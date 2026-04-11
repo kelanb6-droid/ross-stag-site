@@ -908,7 +908,7 @@
     <input type="text" id="site-change-section" placeholder="Section (e.g. Flights, Rules, Tips, Any Section)" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:60%;">
     <input type="text" id="site-change-title" placeholder="Change title" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:60%;">
     <textarea id="site-change-details" rows="3" placeholder="Describe the change..." style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:60%;"></textarea>
-    <input type="url" id="site-change-link" placeholder="Optional reference link (https://...)" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:60%;">
+    <input type="url" id="site-change-link" placeholder="Optional link (https://...)" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:60%;">
     <button onclick="suggestSiteChange()" style="padding:8px 16px; background:var(--gold); color:var(--black); border:none; cursor:pointer; border-radius:2px;">Submit Site Change</button>
     <p id="site-change-msg" style="margin-top:10px;"></p>
   </div>
@@ -1927,7 +1927,6 @@
     const bestmanSection = document.getElementById('bestman-approval-section');
     const secretOptional = document.getElementById('crew-only-optional');
     const tripScheduleSection = document.getElementById('trip-schedule-section');
-    const groomScheduleLockedMsg = document.getElementById('groom-schedule-locked-msg');
     const loginOverlay = document.getElementById('login-overlay');
     const logoutButton = document.getElementById('crew-logout-btn');
     if (!isAllowedCrewBday(crewBday)) {
@@ -1937,15 +1936,10 @@
     const loggedIn = crewBday && crewBday !== '';
     const isGroom = crewBday === groomBday;
     const isAdmin = crewBday === bmBday;
-    const groomScheduleLocked = loggedIn && isGroom && !canGroomViewSchedule();
     if (suggestionSection) suggestionSection.style.display = (loggedIn && !isGroom) ? 'block' : 'none';
     if (bestmanSection) bestmanSection.style.display = isAdmin ? 'block' : 'none';
-    if (secretOptional) secretOptional.style.display = loggedIn ? 'block' : 'none';
-    if (tripScheduleSection) tripScheduleSection.style.display = groomScheduleLocked ? 'none' : 'block';
-    if (groomScheduleLockedMsg) groomScheduleLockedMsg.style.display = groomScheduleLocked ? 'block' : 'none';
-    if (groomScheduleLocked) {
-      updateGroomScheduleCountdown();
-    }
+    if (secretOptional) secretOptional.style.display = (loggedIn && !isGroom) ? 'block' : 'none';
+    if (tripScheduleSection) tripScheduleSection.style.display = (loggedIn && !isGroom) ? 'block' : 'none';
     if (loginOverlay) loginOverlay.style.display = loggedIn ? 'none' : 'flex';
     if (logoutButton) logoutButton.style.display = loggedIn ? 'block' : 'none';
     document.body.classList.toggle('overlay-active', !loggedIn);
@@ -1978,7 +1972,9 @@
     }
     setCrewBday(bday);
     bdayField.value = '';
-    msg.textContent = 'Hello ' + getCrewDisplayName(bday) + '. Welcome, secret schedule unlocked.';
+    msg.textContent = (bday === groomBday)
+      ? 'Hello ' + getCrewDisplayName(bday) + '. You are logged in, but the schedule stays hidden for you.'
+      : 'Hello ' + getCrewDisplayName(bday) + '. Welcome, secret schedule unlocked.';
     msg.style.color = 'var(--gold)';
     updateCrewAccess();
   }
