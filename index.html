@@ -400,6 +400,82 @@
     color: #D4A843;
   }
 
+  .admin-panel {
+    border: 1px solid rgba(212,168,67,.18);
+    background: linear-gradient(180deg, rgba(212,168,67,.06), rgba(255,255,255,.02));
+  }
+  .admin-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin: 18px 0;
+  }
+  .admin-summary-card {
+    padding: 16px;
+    border-radius: 10px;
+    border: 1px solid rgba(212,168,67,.15);
+    background: rgba(255,255,255,.04);
+    text-align: left;
+  }
+  .admin-summary-label {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: .55;
+    margin-bottom: 6px;
+  }
+  .admin-summary-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 34px;
+    color: var(--gold);
+    letter-spacing: 2px;
+    line-height: 1;
+  }
+  .moderation-group-title {
+    text-align: left;
+    margin-top: 18px;
+    margin-bottom: 8px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 2px;
+    color: var(--gold);
+  }
+  .moderation-card {
+    border: 1px solid rgba(212,168,67,.22);
+    padding: 14px;
+    margin: 10px 0;
+    background: rgba(255,255,255,.03);
+    border-radius: 10px;
+    text-align: left;
+  }
+  .moderation-meta {
+    opacity: .68;
+    font-size: 12px;
+    margin: 6px 0;
+    line-height: 1.5;
+  }
+  .moderation-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+  .moderation-empty {
+    text-align: left;
+    opacity: .6;
+    padding: 10px 0;
+  }
+
+  .light-theme .admin-panel {
+    background: linear-gradient(180deg, rgba(212,168,67,.08), rgba(0,0,0,.01));
+    border-color: rgba(0,0,0,.12);
+  }
+  .light-theme .admin-summary-card,
+  .light-theme .moderation-card {
+    background: rgba(0,0,0,.03);
+    border-color: rgba(0,0,0,.12);
+  }
+
   body.overlay-active { overflow: hidden; }
 
   #login-overlay {
@@ -918,14 +994,16 @@
 
 <section id="bestman-approval-section" style="display:none;">
   <h2 class="section-title fade-in">Best Man Approval</h2>
-  <div class="info-card fade-in" style="text-align:center;">
-    <button onclick="accessApproval()" style="padding:8px 16px; background:var(--gold); color:var(--black); border:none; cursor:pointer; border-radius:2px;">Access</button>
-    <div id="approval-panel" style="display:none; margin-top:20px;">
-      <h3>Pending Challenges</h3>
+  <div class="info-card fade-in admin-panel" style="text-align:center;">
+    <h3>Joshua Admin Dashboard</h3>
+    <p id="admin-panel-subtitle" style="opacity:.72; margin-bottom:8px;">Review crew suggestions as soon as they come in.</p>
+    <div id="admin-summary-grid" class="admin-summary-grid"></div>
+    <div id="approval-panel" style="display:none; margin-top:8px;">
+      <h3 class="moderation-group-title">Pending Challenges</h3>
       <div id="pending-challenges"></div>
-      <h3 style="margin-top:18px;">Pending Schedule Suggestions</h3>
+      <h3 class="moderation-group-title">Pending Schedule Suggestions</h3>
       <div id="pending-schedule-suggestions"></div>
-      <h3 style="margin-top:18px;">Pending Site Change Suggestions</h3>
+      <h3 class="moderation-group-title">Pending Site Change Suggestions</h3>
       <div id="pending-site-change-suggestions"></div>
     </div>
   </div>
@@ -1123,6 +1201,11 @@
     return crewNameByBday[code] || 'Crew member';
   }
 
+  function getSubmitterLabel(value) {
+    const code = String(value || '');
+    return crewNameByBday[code] || value || 'Crew member';
+  }
+
   function supportsLocalStorage() {
     try { return typeof localStorage !== 'undefined' && localStorage !== null; } catch (e) { return false; }
   }
@@ -1288,6 +1371,36 @@
     saveJSON('missionBoard', missionBoard);
     saveJSON('expenseEntries', expenseEntries);
     saveJSON('pollBoard', pollBoard);
+  }
+
+  function renderAdminSummary() {
+    const grid = document.getElementById('admin-summary-grid');
+    const subtitle = document.getElementById('admin-panel-subtitle');
+    if (!grid) return;
+    clearElement(grid);
+    const metrics = [
+      ['Total Pending', pendingChallenges.length + pendingScheduleSuggestions.length + pendingSiteChangeSuggestions.length],
+      ['Challenges', pendingChallenges.length],
+      ['Schedules', pendingScheduleSuggestions.length],
+      ['Site Changes', pendingSiteChangeSuggestions.length]
+    ];
+    metrics.forEach(function (entry) {
+      const card = document.createElement('div');
+      card.className = 'admin-summary-card';
+      const label = document.createElement('div');
+      label.className = 'admin-summary-label';
+      label.textContent = entry[0];
+      const value = document.createElement('div');
+      value.className = 'admin-summary-value';
+      value.textContent = String(entry[1]);
+      card.appendChild(label);
+      card.appendChild(value);
+      grid.appendChild(card);
+    });
+    if (subtitle) {
+      const total = pendingChallenges.length + pendingScheduleSuggestions.length + pendingSiteChangeSuggestions.length;
+      subtitle.textContent = total ? 'New suggestions are waiting for review now.' : 'All queues are clear right now.';
+    }
   }
 
   function getChallengeKey(challenge) {
@@ -1658,7 +1771,8 @@
     clearElement(container);
 
     if (!pendingSiteChangeSuggestions.length) {
-      container.innerHTML = '<p style="opacity:.6;">No pending site change suggestions.</p>';
+      container.innerHTML = '<p class="moderation-empty">No pending site change suggestions.</p>';
+      renderAdminSummary();
       return;
     }
 
@@ -1666,10 +1780,7 @@
       .sort((a, b) => b.createdAt - a.createdAt)
       .forEach(item => {
         const div = document.createElement('div');
-        div.style.border = '1px solid rgba(212,168,67,.3)';
-        div.style.padding = '12px';
-        div.style.margin = '8px 0';
-        div.style.background = 'var(--dark)';
+        div.className = 'moderation-card';
 
         const title = document.createElement('p');
         const strong = document.createElement('strong');
@@ -1678,12 +1789,12 @@
         div.appendChild(title);
 
         const sectionLine = document.createElement('p');
-        sectionLine.style.opacity = '.75';
-        sectionLine.textContent = 'Section: ' + item.sectionName + ' • by ' + item.suggestedBy;
+  sectionLine.className = 'moderation-meta';
+  sectionLine.textContent = 'Section: ' + item.sectionName + ' • by ' + getSubmitterLabel(item.suggestedBy);
         div.appendChild(sectionLine);
 
         const details = document.createElement('p');
-        details.style.opacity = '.75';
+  details.style.opacity = '.82';
         details.textContent = item.details;
         div.appendChild(details);
 
@@ -1698,20 +1809,26 @@
           div.appendChild(linkWrap);
         }
 
-        div.appendChild(makeActionButton(
+        const actions = document.createElement('div');
+        actions.className = 'moderation-actions';
+
+        actions.appendChild(makeActionButton(
           'Approve',
           'margin-right:10px; padding:6px 12px; background:var(--gold); color:var(--black); border:none; cursor:pointer;',
           function () { approveSiteChangeSuggestion(item.id); }
         ));
 
-        div.appendChild(makeActionButton(
+        actions.appendChild(makeActionButton(
           'Reject',
           'padding:6px 12px; background:#C9382A; color:white; border:none; cursor:pointer;',
           function () { rejectSiteChangeSuggestion(item.id); }
         ));
 
+        div.appendChild(actions);
+
         container.appendChild(div);
       });
+    renderAdminSummary();
   }
 
   function approveSiteChangeSuggestion(id) {
@@ -1790,7 +1907,8 @@
     clearElement(container);
 
     if (!pendingScheduleSuggestions.length) {
-      container.innerHTML = '<p style="opacity:.6;">No pending schedule suggestions.</p>';
+      container.innerHTML = '<p class="moderation-empty">No pending schedule suggestions.</p>';
+      renderAdminSummary();
       return;
     }
 
@@ -1798,10 +1916,7 @@
       .sort((a, b) => b.createdAt - a.createdAt)
       .forEach(item => {
         const div = document.createElement('div');
-        div.style.border = '1px solid rgba(212,168,67,.3)';
-        div.style.padding = '12px';
-        div.style.margin = '8px 0';
-        div.style.background = 'var(--dark)';
+        div.className = 'moderation-card';
 
         const title = document.createElement('p');
         const strong = document.createElement('strong');
@@ -1810,9 +1925,8 @@
         div.appendChild(title);
 
         const meta = document.createElement('p');
-        meta.style.opacity = '.7';
-        meta.style.fontSize = '12px';
-        meta.textContent = item.day + ' • ' + item.time + ' • by ' + item.suggestedBy;
+        meta.className = 'moderation-meta';
+        meta.textContent = item.day + ' • ' + item.time + ' • by ' + getSubmitterLabel(item.suggestedBy);
         div.appendChild(meta);
 
         const details = document.createElement('p');
@@ -1831,20 +1945,26 @@
           div.appendChild(linkWrap);
         }
 
-        div.appendChild(makeActionButton(
+        const actions = document.createElement('div');
+        actions.className = 'moderation-actions';
+
+        actions.appendChild(makeActionButton(
           'Approve',
           'margin-right:10px; padding:6px 12px; background:var(--gold); color:var(--black); border:none; cursor:pointer;',
           function () { approveScheduleSuggestion(item.id); }
         ));
 
-        div.appendChild(makeActionButton(
+        actions.appendChild(makeActionButton(
           'Reject',
           'padding:6px 12px; background:#C9382A; color:white; border:none; cursor:pointer;',
           function () { rejectScheduleSuggestion(item.id); }
         ));
 
+        div.appendChild(actions);
+
         container.appendChild(div);
       });
+    renderAdminSummary();
   }
 
   function approveScheduleSuggestion(id) {
@@ -1919,6 +2039,7 @@
     displayPendingChallenges();
     displayPendingScheduleSuggestions();
     displayPendingSiteChangeSuggestions();
+    renderAdminSummary();
   }
 
   function updateCrewAccess() {
@@ -1948,6 +2069,7 @@
       displayPendingChallenges();
       displayPendingScheduleSuggestions();
       displayPendingSiteChangeSuggestions();
+      renderAdminSummary();
     } else {
       document.getElementById('approval-panel').style.display = 'none';
     }
@@ -1996,15 +2118,13 @@
     if (!container) return;
     clearElement(container);
     if (!pendingChallenges.length) {
-      container.innerHTML = '<p style="opacity:.6;">No pending challenges.</p>';
+      container.innerHTML = '<p class="moderation-empty">No pending challenges.</p>';
+      renderAdminSummary();
       return;
     }
     pendingChallenges.forEach(item => {
       const div = document.createElement('div');
-      div.style.border = '1px solid rgba(212,168,67,.3)';
-      div.style.padding = '12px';
-      div.style.margin = '8px 0';
-      div.style.background = 'var(--dark)';
+      div.className = 'moderation-card';
 
       const title = document.createElement('p');
       const strong = document.createElement('strong');
@@ -2013,9 +2133,8 @@
       div.appendChild(title);
 
       const meta = document.createElement('p');
-      meta.style.opacity = '.7';
-      meta.style.fontSize = '12px';
-      meta.textContent = item.type + ' • ' + item.difficulty + ' • by ' + item.suggestedBy;
+      meta.className = 'moderation-meta';
+      meta.textContent = item.type + ' • ' + item.difficulty + ' • by ' + getSubmitterLabel(item.suggestedBy);
       div.appendChild(meta);
 
       const notes = document.createElement('p');
@@ -2023,20 +2142,26 @@
       notes.textContent = item.notes || 'No extra notes.';
       div.appendChild(notes);
 
-      div.appendChild(makeActionButton(
+      const actions = document.createElement('div');
+      actions.className = 'moderation-actions';
+
+      actions.appendChild(makeActionButton(
         'Approve',
         'margin-right:10px; padding:6px 12px; background:var(--gold); color:var(--black); border:none; cursor:pointer;',
         function () { approveChallenge(item.id); }
       ));
 
-      div.appendChild(makeActionButton(
+      actions.appendChild(makeActionButton(
         'Reject',
         'padding:6px 12px; background:#C9382A; color:white; border:none; cursor:pointer;',
         function () { rejectChallenge(item.id); }
       ));
 
+      div.appendChild(actions);
+
       container.appendChild(div);
     });
+    renderAdminSummary();
   }
 
   function approveChallenge(id) {
