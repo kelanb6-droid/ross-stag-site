@@ -2195,23 +2195,35 @@
   }
 
   // Theme Toggle
-  function toggleTheme() {
-    const body = document.body;
+  function setTheme(mode, persist) {
+    const isLight = mode === 'light';
     const button = document.getElementById('theme-toggle');
-    if (body.classList.contains('light-theme')) {
-      body.classList.remove('light-theme');
-      button.textContent = '🌙';
-      localStorage.setItem('theme', 'dark');
-    } else {
-      body.classList.add('light-theme');
-      button.textContent = '☀️';
-      localStorage.setItem('theme', 'light');
+    document.body.classList.toggle('light-theme', isLight);
+    if (button) button.textContent = isLight ? '☀️' : '🌙';
+    if (!persist) return;
+    try {
+      localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    } catch (e) {
+      // Ignore storage failures and keep UI responsive.
     }
   }
-  if (localStorage.getItem('theme') === 'light') {
-    document.body.classList.add('light-theme');
-    document.getElementById('theme-toggle').textContent = '☀️';
+
+  function toggleTheme() {
+    const nextTheme = document.body.classList.contains('light-theme') ? 'dark' : 'light';
+    setTheme(nextTheme, true);
   }
+
+  function initTheme() {
+    let storedTheme = 'dark';
+    try {
+      storedTheme = localStorage.getItem('theme') || 'dark';
+    } catch (e) {
+      storedTheme = 'dark';
+    }
+    setTheme(storedTheme === 'light' ? 'light' : 'dark', false);
+  }
+
+  initTheme();
 
   // Drinking Game
   const drinkingChallenges = [
