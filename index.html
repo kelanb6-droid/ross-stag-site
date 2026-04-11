@@ -203,7 +203,7 @@
     --accent: #C9382A;
     --sun: #F4A423;
   }
-  body.light-theme { 
+  .light-theme body { 
     background: var(--black); 
     color: var(--cream); 
   }
@@ -898,7 +898,18 @@
     <button onclick="suggestScheduleItem()" style="padding:8px 16px; background:var(--gold); color:var(--black); border:none; cursor:pointer; border-radius:2px;">Submit Schedule Item</button>
     <p id="schedule-suggestion-msg" style="margin-top:10px;"></p>
   </div>
+  <div class="info-card fade-in" style="margin-top:20px; text-align:center;">
+    <h3>Suggest a Site Change (Any Section)</h3>
+    <p style="opacity:.7; margin-bottom:12px;">Suggest edits for any part of the site. Joshua will approve before it goes live.</p>
+    <input type="text" id="site-change-section" placeholder="Section (e.g. Flights, Rules, Tips, Any Section)" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:60%;">
+    <input type="text" id="site-change-title" placeholder="Change title" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:60%;">
+    <textarea id="site-change-details" rows="3" placeholder="Describe the change..." style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:60%;"></textarea>
+    <input type="url" id="site-change-link" placeholder="Optional reference link (https://...)" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:60%;">
+    <button onclick="suggestSiteChange()" style="padding:8px 16px; background:var(--gold); color:var(--black); border:none; cursor:pointer; border-radius:2px;">Submit Site Change</button>
+    <p id="site-change-msg" style="margin-top:10px;"></p>
+  </div>
   <div id="approved-challenges" style="margin-top:20px;"></div>
+  <div id="approved-site-change-suggestions" style="margin-top:20px;"></div>
 </section>
 
 <section id="bestman-approval-section" style="display:none;">
@@ -910,6 +921,8 @@
       <div id="pending-challenges"></div>
       <h3 style="margin-top:18px;">Pending Schedule Suggestions</h3>
       <div id="pending-schedule-suggestions"></div>
+      <h3 style="margin-top:18px;">Pending Site Change Suggestions</h3>
+      <div id="pending-site-change-suggestions"></div>
     </div>
   </div>
 </section>
@@ -1145,8 +1158,11 @@
   let challengeReportLog = loadJSON('challengeReportLog', {});
   let challengeSubmissionLog = loadJSON('challengeSubmissionLog', {});
   let scheduleSubmissionLog = loadJSON('scheduleSubmissionLog', {});
+  let siteChangeSubmissionLog = loadJSON('siteChangeSubmissionLog', {});
   let pendingScheduleSuggestions = loadJSON('pendingScheduleSuggestions', []);
   let approvedScheduleSuggestions = loadJSON('approvedScheduleSuggestions', []);
+  let pendingSiteChangeSuggestions = loadJSON('pendingSiteChangeSuggestions', []);
+  let approvedSiteChangeSuggestions = loadJSON('approvedSiteChangeSuggestions', []);
   let shownChallengeIds = [];
   let completedChallengeIds = loadJSON('completedChallengeIds', []);
   let punishmentHistory = loadJSON('punishmentHistory', []);
@@ -1224,8 +1240,11 @@
     saveJSON('challengeReportLog', challengeReportLog);
     saveJSON('challengeSubmissionLog', challengeSubmissionLog);
     saveJSON('scheduleSubmissionLog', scheduleSubmissionLog);
+    saveJSON('siteChangeSubmissionLog', siteChangeSubmissionLog);
     saveJSON('pendingScheduleSuggestions', pendingScheduleSuggestions);
     saveJSON('approvedScheduleSuggestions', approvedScheduleSuggestions);
+    saveJSON('pendingSiteChangeSuggestions', pendingSiteChangeSuggestions);
+    saveJSON('approvedSiteChangeSuggestions', approvedSiteChangeSuggestions);
     saveJSON('completedChallengeIds', completedChallengeIds);
     saveJSON('punishmentHistory', punishmentHistory);
     saveJSON('teamBattle', teamBattle);
@@ -1396,6 +1415,11 @@
       msg.style.color = '#C9382A';
       return;
     }
+    if (crew === groomBday) {
+      msg.textContent = 'Ross cannot submit suggestions.';
+      msg.style.color = '#C9382A';
+      return;
+    }
     const title = titleInput.value.trim();
     const notes = notesInput.value.trim();
     const type = typeInput.value;
@@ -1453,6 +1477,11 @@
 
     if (!crew) {
       msg.textContent = 'Log in with your crew access code to submit schedule items.';
+      msg.style.color = '#C9382A';
+      return;
+    }
+    if (crew === groomBday) {
+      msg.textContent = 'Ross cannot submit suggestions.';
       msg.style.color = '#C9382A';
       return;
     }
@@ -1514,6 +1543,208 @@
     linkInput.value = '';
 
     displayPendingScheduleSuggestions();
+  }
+
+  function suggestSiteChange() {
+    const sectionInput = document.getElementById('site-change-section');
+    const titleInput = document.getElementById('site-change-title');
+    const detailsInput = document.getElementById('site-change-details');
+    const linkInput = document.getElementById('site-change-link');
+    const msg = document.getElementById('site-change-msg');
+    const crew = getCurrentCrewKey();
+
+    if (!crew) {
+      msg.textContent = 'Log in with your crew access code to submit site changes.';
+      msg.style.color = '#C9382A';
+      return;
+    }
+    if (crew === groomBday) {
+      msg.textContent = 'Ross cannot submit suggestions.';
+      msg.style.color = '#C9382A';
+      return;
+    }
+
+    const sectionName = sectionInput.value.trim() || 'Any Section';
+    const title = titleInput.value.trim();
+    const details = detailsInput.value.trim();
+    const link = normalizeURL(linkInput.value);
+
+    if (title.length < 3 || details.length < 6) {
+      msg.textContent = 'Add a clear title and details before submitting.';
+      msg.style.color = '#C9382A';
+      return;
+    }
+
+    const normalized = normalizeTitle(sectionName + '|' + title + '|' + details);
+    const duplicatePending = pendingSiteChangeSuggestions.some(item => normalizeTitle(item.sectionName + '|' + item.title + '|' + item.details) === normalized);
+    const duplicateApproved = approvedSiteChangeSuggestions.some(item => normalizeTitle(item.sectionName + '|' + item.title + '|' + item.details) === normalized);
+    if (duplicatePending || duplicateApproved) {
+      msg.textContent = 'That site change suggestion already exists.';
+      msg.style.color = '#C9382A';
+      return;
+    }
+
+    const todayKey = getTodayKey();
+    const submissionKey = crew + ':' + todayKey;
+    const submissionsToday = siteChangeSubmissionLog[submissionKey] || 0;
+    if (submissionsToday >= 6) {
+      msg.textContent = 'Daily limit reached (6 site changes per crew member).';
+      msg.style.color = '#C9382A';
+      return;
+    }
+
+    siteChangeSubmissionLog[submissionKey] = submissionsToday + 1;
+    pendingSiteChangeSuggestions.push({
+      id: Date.now().toString() + Math.random().toString(36).slice(2, 7),
+      sectionName,
+      title,
+      details,
+      link,
+      suggestedBy: crew,
+      createdAt: Date.now()
+    });
+    saveChallengeData();
+
+    msg.textContent = 'Site change submitted for best man approval.';
+    msg.style.color = 'var(--gold)';
+    sectionInput.value = '';
+    titleInput.value = '';
+    detailsInput.value = '';
+    linkInput.value = '';
+
+    displayPendingSiteChangeSuggestions();
+  }
+
+  function displayPendingSiteChangeSuggestions() {
+    const container = document.getElementById('pending-site-change-suggestions');
+    if (!container) return;
+    clearElement(container);
+
+    if (!pendingSiteChangeSuggestions.length) {
+      container.innerHTML = '<p style="opacity:.6;">No pending site change suggestions.</p>';
+      return;
+    }
+
+    pendingSiteChangeSuggestions
+      .sort((a, b) => b.createdAt - a.createdAt)
+      .forEach(item => {
+        const div = document.createElement('div');
+        div.style.border = '1px solid rgba(212,168,67,.3)';
+        div.style.padding = '12px';
+        div.style.margin = '8px 0';
+        div.style.background = 'var(--dark)';
+
+        const title = document.createElement('p');
+        const strong = document.createElement('strong');
+        strong.textContent = item.title;
+        title.appendChild(strong);
+        div.appendChild(title);
+
+        const sectionLine = document.createElement('p');
+        sectionLine.style.opacity = '.75';
+        sectionLine.textContent = 'Section: ' + item.sectionName + ' • by ' + item.suggestedBy;
+        div.appendChild(sectionLine);
+
+        const details = document.createElement('p');
+        details.style.opacity = '.75';
+        details.textContent = item.details;
+        div.appendChild(details);
+
+        if (item.link) {
+          const linkWrap = document.createElement('p');
+          const a = document.createElement('a');
+          a.href = item.link;
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+          a.textContent = 'Open link';
+          linkWrap.appendChild(a);
+          div.appendChild(linkWrap);
+        }
+
+        div.appendChild(makeActionButton(
+          'Approve',
+          'margin-right:10px; padding:6px 12px; background:var(--gold); color:var(--black); border:none; cursor:pointer;',
+          function () { approveSiteChangeSuggestion(item.id); }
+        ));
+
+        div.appendChild(makeActionButton(
+          'Reject',
+          'padding:6px 12px; background:#C9382A; color:white; border:none; cursor:pointer;',
+          function () { rejectSiteChangeSuggestion(item.id); }
+        ));
+
+        container.appendChild(div);
+      });
+  }
+
+  function approveSiteChangeSuggestion(id) {
+    const index = pendingSiteChangeSuggestions.findIndex(item => item.id === id);
+    if (index === -1) return;
+    const entry = pendingSiteChangeSuggestions.splice(index, 1)[0];
+    approvedSiteChangeSuggestions.push(entry);
+    saveChallengeData();
+    displayPendingSiteChangeSuggestions();
+    displayApprovedSiteChangeSuggestions();
+  }
+
+  function rejectSiteChangeSuggestion(id) {
+    pendingSiteChangeSuggestions = pendingSiteChangeSuggestions.filter(item => item.id !== id);
+    saveChallengeData();
+    displayPendingSiteChangeSuggestions();
+  }
+
+  function displayApprovedSiteChangeSuggestions() {
+    const container = document.getElementById('approved-site-change-suggestions');
+    if (!container) return;
+    clearElement(container);
+
+    if (!approvedSiteChangeSuggestions.length) {
+      container.innerHTML = '<p style="opacity:.6;">No approved site change suggestions yet.</p>';
+      return;
+    }
+
+    const heading = document.createElement('h3');
+    heading.textContent = 'Approved Site Change Suggestions';
+    container.appendChild(heading);
+
+    approvedSiteChangeSuggestions
+      .sort((a, b) => b.createdAt - a.createdAt)
+      .forEach(item => {
+        const card = document.createElement('div');
+        card.style.border = '1px solid rgba(212,168,67,.2)';
+        card.style.padding = '12px';
+        card.style.margin = '8px 0';
+        card.style.background = 'var(--dark)';
+
+        const title = document.createElement('p');
+        const strong = document.createElement('strong');
+        strong.textContent = item.title;
+        title.appendChild(strong);
+        card.appendChild(title);
+
+        const sectionLine = document.createElement('p');
+        sectionLine.style.opacity = '.75';
+        sectionLine.textContent = 'Section: ' + item.sectionName + ' • by ' + item.suggestedBy;
+        card.appendChild(sectionLine);
+
+        const details = document.createElement('p');
+        details.style.opacity = '.75';
+        details.textContent = item.details;
+        card.appendChild(details);
+
+        if (item.link) {
+          const linkP = document.createElement('p');
+          const a = document.createElement('a');
+          a.href = item.link;
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+          a.textContent = 'View link';
+          linkP.appendChild(a);
+          card.appendChild(linkP);
+        }
+
+        container.appendChild(card);
+      });
   }
 
   function displayPendingScheduleSuggestions() {
@@ -1650,6 +1881,7 @@
     document.getElementById('approval-panel').style.display = 'block';
     displayPendingChallenges();
     displayPendingScheduleSuggestions();
+    displayPendingSiteChangeSuggestions();
   }
 
   function updateCrewAccess() {
@@ -1664,8 +1896,9 @@
       crewBday = '';
     }
     const loggedIn = crewBday && crewBday !== '';
+    const isGroom = crewBday === groomBday;
     const isAdmin = crewBday === bmBday;
-    if (suggestionSection) suggestionSection.style.display = loggedIn ? 'block' : 'none';
+    if (suggestionSection) suggestionSection.style.display = (loggedIn && !isGroom) ? 'block' : 'none';
     if (bestmanSection) bestmanSection.style.display = isAdmin ? 'block' : 'none';
     if (secretOptional) secretOptional.style.display = loggedIn ? 'block' : 'none';
     if (loginOverlay) loginOverlay.style.display = loggedIn ? 'none' : 'flex';
@@ -1675,11 +1908,13 @@
       document.getElementById('approval-panel').style.display = 'block';
       displayPendingChallenges();
       displayPendingScheduleSuggestions();
+      displayPendingSiteChangeSuggestions();
     } else {
       document.getElementById('approval-panel').style.display = 'none';
     }
     if (loggedIn) displayApprovedChallenges();
     displayApprovedScheduleSuggestions();
+    displayApprovedSiteChangeSuggestions();
   }
 
   function crewLogin() {
