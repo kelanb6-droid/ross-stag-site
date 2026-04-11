@@ -1107,7 +1107,16 @@
     '080997',
     '220997'
   ]);
+  const crewNameByBday = {
+    '170997': 'Ross',
+    '180997': 'Joshua'
+  };
   let crewBdayState = '';
+
+  function getCrewDisplayName(bday) {
+    const code = String(bday || '');
+    return crewNameByBday[code] || 'Crew member';
+  }
 
   function supportsLocalStorage() {
     try { return typeof localStorage !== 'undefined' && localStorage !== null; } catch (e) { return false; }
@@ -1927,7 +1936,7 @@
       return;
     }
     if (bday === groomBday) {
-      msg.textContent = 'Ross cannot unlock this section. Use a valid crew access code.';
+      msg.textContent = 'Hello ' + getCrewDisplayName(bday) + '. You can view the page, but this section stays locked for you.';
       msg.style.color = '#C9382A';
       setCrewBday('');
       bdayField.value = '';
@@ -1941,7 +1950,7 @@
     }
     setCrewBday(bday);
     bdayField.value = '';
-    msg.textContent = 'Welcome, crew member. Secret schedule unlocked.';
+    msg.textContent = 'Hello ' + getCrewDisplayName(bday) + '. Welcome, secret schedule unlocked.';
     msg.style.color = 'var(--gold)';
     updateCrewAccess();
   }
