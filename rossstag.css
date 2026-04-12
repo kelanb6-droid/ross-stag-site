@@ -1446,7 +1446,7 @@
       left: 8px;
       right: 8px;
       min-width: 0;
-      top: calc(66px + env(safe-area-inset-top));
+      top: calc(var(--top-nav-height, 66px) + 8px + env(safe-area-inset-top));
       max-height: min(58vh, 420px);
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;

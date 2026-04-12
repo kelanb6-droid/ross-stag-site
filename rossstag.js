@@ -86,6 +86,7 @@
     if (!toggle) return;
     toggle.addEventListener('click', function (event) {
       event.preventDefault();
+      event.stopPropagation();
       const willOpen = !group.classList.contains('open');
       closeOpenMenus(group);
       group.classList.toggle('open', willOpen);
@@ -176,9 +177,14 @@
     if (!insideNav) closeOpenMenus(null);
   });
 
-  window.addEventListener('scroll', function () {
-    closeOpenMenus(null);
-  });
+  function syncTopNavHeightVar() {
+    const topNav = document.querySelector('.top-nav');
+    if (!topNav) return;
+    const height = Math.ceil(topNav.getBoundingClientRect().height);
+    document.documentElement.style.setProperty('--top-nav-height', height + 'px');
+  }
+  syncTopNavHeightVar();
+  window.addEventListener('resize', syncTopNavHeightVar);
 
   if (navMap.length) {
     setActiveNavLink(navMap[0].section.id);
