@@ -96,11 +96,11 @@
     <div class="countdown-item"><div class="countdown-num" id="secs">--</div><div class="countdown-unit">Seconds</div></div>
   </div>
   <div style="margin-top:20px;">
-    <div style="font-size:11px; letter-spacing:4px; text-transform:uppercase; opacity:.5; margin-bottom:8px;">Trip Progress</div>
-    <div style="width:100%; height:6px; background:rgba(255,255,255,.1); border-radius:3px;">
-      <div id="progress-fill" style="height:100%; background:var(--gold); border-radius:3px; width:0%; transition:width 1s;"></div>
+    <div class="progress-label">Trip Progress</div>
+    <div class="progress-track">
+      <div id="progress-fill" class="progress-fill"></div>
     </div>
-    <div id="progress-text" style="font-size:12px; opacity:.5; margin-top:4px;"></div>
+    <div id="progress-text" class="progress-text"></div>
   </div>
 </div>
 
@@ -150,7 +150,7 @@
     </div>
 
   </div>
-  <p class="fade-in" style="font-size:12px; opacity:.4; margin-top:16px; line-height:1.6;">Hand luggage only (45x36x20cm). No hold bags. Check-in opens 30 days before at easyjet.com.</p>
+  <p class="fade-in subtle-note">Hand luggage only (45x36x20cm). No hold bags. Check-in opens 30 days before at easyjet.com.</p>
 </section>
 
 <section id="base-section">
@@ -273,8 +273,8 @@
 <section id="highlights-section">
   <h2 class="section-title fade-in">Barcelona Highlights</h2>
   <div class="info-grid">
-    <div class="info-card fade-in"><h3>Sagrada Familia</h3><p>The iconic unfinished basilica by GaudÃ­. A must-see architectural marvel.</p></div>
-    <div class="info-card fade-in"><h3>Park GÃ¼ell</h3><p>Colorful mosaic park with stunning views of the city.</p></div>
+    <div class="info-card fade-in"><h3>Sagrada Familia</h3><p>The iconic unfinished basilica by Gaud&iacute;. A must-see architectural marvel.</p></div>
+    <div class="info-card fade-in"><h3>Park G&uuml;ell</h3><p>Colorful mosaic park with stunning views of the city.</p></div>
     <div class="info-card fade-in"><h3>La Rambla</h3><p>Bustling street with street performers, markets, and nightlife.</p></div>
     <div class="info-card fade-in"><h3>Camp Nou</h3><p>Home of FC Barcelona. Tour the stadium if you're a football fan.</p></div>
   </div>
@@ -295,7 +295,7 @@
 <section id="funfacts-section">
   <h2 class="section-title fade-in">Barcelona Fun Facts</h2>
   <div class="info-grid">
-    <div class="info-card fade-in"><h3>GaudÃ­'s Legacy</h3><p>Barcelona is home to 7 UNESCO World Heritage sites, mostly designed by Antoni GaudÃ­.</p></div>
+    <div class="info-card fade-in"><h3>Gaud&iacute;'s Legacy</h3><p>Barcelona is home to 7 UNESCO World Heritage sites, mostly designed by Antoni Gaud&iacute;.</p></div>
     <div class="info-card fade-in"><h3>Football Passion</h3><p>FC Barcelona has over 140,000 season ticket holders. Camp Nou is the largest stadium in Europe.</p></div>
     <div class="info-card fade-in"><h3>Beach City</h3><p>Barcelona has 4.2km of beaches right in the city center. Barceloneta is the most famous.</p></div>
     <div class="info-card fade-in"><h3>Catalan Culture</h3><p>Catalonia has its own language and traditions. Try some tapas and sangria!</p></div>
@@ -305,8 +305,8 @@
 <section id="nightlife-section">
   <h2 class="section-title fade-in">Barcelona Nightlife Guide</h2>
   <div class="info-grid">
-    <div class="info-card fade-in"><h3>Top Bars</h3><p><strong>Opium Barcelona:</strong> Rooftop cocktails with city views.<br><strong>Punto BCN:</strong> Chic lounge in Eixample.<br><strong>La Chapelle:</strong> Speakeasy vibes in Gothic Quarter.<br><strong>Ãtame:</strong> Trendy spot with great music.</p></div>
-    <div class="info-card fade-in"><h3>Shisha Bars</h3><p><strong>Aladdin Shisha Bar:</strong> Traditional hookah in Raval.<br><strong>Smoke Barcelona:</strong> Modern lounge with flavors.<br><strong>Hookah Lounge BCN:</strong> Relaxed atmosphere near PlaÃ§a Catalunya.<br><strong>El Born Shisha:</strong> Cozy spot in El Born district.</p></div>
+    <div class="info-card fade-in"><h3>Top Bars</h3><p><strong>Opium Barcelona:</strong> Rooftop cocktails with city views.<br><strong>Punto BCN:</strong> Chic lounge in Eixample.<br><strong>La Chapelle:</strong> Speakeasy vibes in Gothic Quarter.<br><strong>&Aacute;tame:</strong> Trendy spot with great music.</p></div>
+    <div class="info-card fade-in"><h3>Shisha Bars</h3><p><strong>Aladdin Shisha Bar:</strong> Traditional hookah in Raval.<br><strong>Smoke Barcelona:</strong> Modern lounge with flavors.<br><strong>Hookah Lounge BCN:</strong> Relaxed atmosphere near Pla&ccedil;a Catalunya.<br><strong>El Born Shisha:</strong> Cozy spot in El Born district.</p></div>
     <div class="info-card fade-in"><h3>Nightlife Tips</h3><p>Bars open late (till 3-5am). Happy hour 6-9pm. Dress code casual. Use taxis or metro after dark. Stay hydrated!</p></div>
   </div>
 </section>
@@ -344,7 +344,7 @@
       <p style="opacity:.45;">Best for keeping the lads together when kickoff times shift.</p>
     </div>
   </div>
-  <p class="fade-in" style="font-size:12px; opacity:.55; margin-top:16px; line-height:1.6;">Tip: TV times are often finalized 2-4 weeks before kickoff. Buy from official club ticket pages first, then trusted resale only if needed.</p>
+  <p class="fade-in subtle-note">Tip: TV times are often finalized 2-4 weeks before kickoff. Buy from official club ticket pages first, then trusted resale only if needed.</p>
 </section>
 
 <section id="restaurants-section">
@@ -419,9 +419,9 @@
 <section id="experiences-section">
   <h2 class="section-title fade-in">Barcelona Experiences</h2>
   <div class="info-grid">
-    <div class="info-card fade-in"><h3>Pool Club Day Pass</h3><p>Access Barcelona's best pool bars and day clubs. Bring the lads, stay cool, and keep the party rolling.</p><a href="https://www.getyourguide.com/barcelona-l59/" target="_blank" rel="noopener noreferrer" style="display:inline-block; margin-top:10px; padding:10px 20px; background:var(--gold); color:var(--black); text-decoration:none; border-radius:2px;">View Pool Club Pass</a></div>
-    <div class="info-card fade-in"><h3>Boat Party & Catamaran</h3><p>Hit the Mediterranean on a private boat party with music, drinks and a view of Barcelona from the sea.</p><a href="https://www.getyourguide.com/barcelona-l59/" target="_blank" rel="noopener noreferrer" style="display:inline-block; margin-top:10px; padding:10px 20px; background:var(--gold); color:var(--black); text-decoration:none; border-radius:2px;">View Boat Party</a></div>
-    <div class="info-card fade-in"><h3>Tapas & Nightlife Tour</h3><p>Secure a guided evening tour with top tapas stops and nightlife access. Perfect for keeping the group together after dark.</p><a href="https://www.getyourguide.com/barcelona-l59/" target="_blank" rel="noopener noreferrer" style="display:inline-block; margin-top:10px; padding:10px 20px; background:var(--gold); color:var(--black); text-decoration:none; border-radius:2px;">View Nightlife Tour</a></div>
+    <div class="info-card fade-in"><h3>Pool Club Day Pass</h3><p>Access Barcelona's best pool bars and day clubs. Bring the lads, stay cool, and keep the party rolling.</p><a class="btn-experience" href="https://www.getyourguide.com/barcelona-l59/" target="_blank" rel="noopener noreferrer">View Pool Club Pass</a></div>
+    <div class="info-card fade-in"><h3>Boat Party & Catamaran</h3><p>Hit the Mediterranean on a private boat party with music, drinks and a view of Barcelona from the sea.</p><a class="btn-experience" href="https://www.getyourguide.com/barcelona-l59/" target="_blank" rel="noopener noreferrer">View Boat Party</a></div>
+    <div class="info-card fade-in"><h3>Tapas & Nightlife Tour</h3><p>Secure a guided evening tour with top tapas stops and nightlife access. Perfect for keeping the group together after dark.</p><a class="btn-experience" href="https://www.getyourguide.com/barcelona-l59/" target="_blank" rel="noopener noreferrer">View Nightlife Tour</a></div>
   </div>
   <p style="margin-top:20px; opacity:.7; text-align:center;">Curated pick of stag-friendly pool bars, boat parties and Barcelona tours.</p>
 </section>
@@ -478,7 +478,7 @@
       <p><a href="https://maps.google.com/?q=Sagrada+Familia+Barcelona" target="_blank" rel="noopener noreferrer">Open in Maps</a></p>
     </div>
   </div>
-  <p class="fade-in" style="font-size:12px; opacity:.55; margin-top:16px; line-height:1.6;">All prices are typical 2025-2026 ranges and can move with demand. For groups of 6, planning 1-2 weeks ahead usually gets better slots and bundle rates.</p>
+  <p class="fade-in subtle-note">All prices are typical 2025-2026 ranges and can move with demand. For groups of 6, planning 1-2 weeks ahead usually gets better slots and bundle rates.</p>
 </section>
 
 <section id="suggestion-section" style="display:none;">
@@ -486,40 +486,40 @@
   <div class="info-card fade-in" style="margin-top:20px; text-align:center;">
     <h3>Submit Your Challenge</h3>
     <p style="opacity:.7; margin-bottom:12px;">Crew suggestions are moderated by Joshua before going live.</p>
-    <input type="text" id="challenge-title" placeholder="Challenge title" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:60%;">
-    <select id="challenge-type" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:29%;">
+    <input type="text" id="challenge-title" placeholder="Challenge title" class="form-input form-input-wide">
+    <select id="challenge-type" class="form-input form-input-mid">
       <option value="Drinking">Drinking</option>
       <option value="Dares">Dares</option>
       <option value="Team">Team</option>
       <option value="Chill">Chill</option>
     </select>
-    <select id="challenge-difficulty" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:29%;">
+    <select id="challenge-difficulty" class="form-input form-input-mid">
       <option value="Easy">Easy</option>
       <option value="Medium">Medium</option>
       <option value="Chaos">Chaos</option>
     </select>
-    <textarea id="challenge-notes" rows="3" placeholder="Optional details..." style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:60%;"></textarea>
+    <textarea id="challenge-notes" rows="3" placeholder="Optional details..." class="form-input form-input-wide"></textarea>
     <button onclick="suggestChallenge()" class="btn btn-gold btn-sm">Submit Challenge</button>
     <p id="challenge-msg" style="margin-top:10px;"></p>
   </div>
   <div class="info-card fade-in" style="margin-top:20px; text-align:center;">
     <h3>Suggest a Schedule Item</h3>
     <p style="opacity:.7; margin-bottom:12px;">Suggest a plan entry with a time, details and optional link. Joshua will approve it.</p>
-    <input type="text" id="schedule-title" placeholder="Title (e.g. Sunset Rooftop Drinks)" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:60%;">
-    <input type="text" id="schedule-day" placeholder="Day/Date (e.g. 4 May)" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:29%;">
-    <input type="text" id="schedule-time" placeholder="Time (e.g. 15:30)" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:29%;">
-    <textarea id="schedule-details" rows="3" placeholder="Details..." style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:60%;"></textarea>
-    <input type="url" id="schedule-link" placeholder="Optional link (https://...)" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:60%;">
+    <input type="text" id="schedule-title" placeholder="Title (e.g. Sunset Rooftop Drinks)" class="form-input form-input-wide">
+    <input type="text" id="schedule-day" placeholder="Day/Date (e.g. 4 May)" class="form-input form-input-mid">
+    <input type="text" id="schedule-time" placeholder="Time (e.g. 15:30)" class="form-input form-input-mid">
+    <textarea id="schedule-details" rows="3" placeholder="Details..." class="form-input form-input-wide"></textarea>
+    <input type="url" id="schedule-link" placeholder="Optional link (https://...)" class="form-input form-input-wide">
     <button onclick="suggestScheduleItem()" class="btn btn-gold btn-sm">Submit Schedule Item</button>
     <p id="schedule-suggestion-msg" style="margin-top:10px;"></p>
   </div>
   <div class="info-card fade-in" style="margin-top:20px; text-align:center;">
     <h3>Suggest a Site Change (Any Section)</h3>
     <p style="opacity:.7; margin-bottom:12px;">Suggest edits for any part of the site. Joshua will approve before it goes live.</p>
-    <input type="text" id="site-change-section" placeholder="Section (e.g. Flights, Rules, Tips, Any Section)" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:60%;">
-    <input type="text" id="site-change-title" placeholder="Change title" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:60%;">
-    <textarea id="site-change-details" rows="3" placeholder="Describe the change..." style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:60%;"></textarea>
-    <input type="url" id="site-change-link" placeholder="Optional link (https://...)" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:60%;">
+    <input type="text" id="site-change-section" placeholder="Section (e.g. Flights, Rules, Tips, Any Section)" class="form-input form-input-wide">
+    <input type="text" id="site-change-title" placeholder="Change title" class="form-input form-input-wide">
+    <textarea id="site-change-details" rows="3" placeholder="Describe the change..." class="form-input form-input-wide"></textarea>
+    <input type="url" id="site-change-link" placeholder="Optional link (https://...)" class="form-input form-input-wide">
     <button onclick="suggestSiteChange()" class="btn btn-gold btn-sm">Submit Site Change</button>
     <p id="site-change-msg" style="margin-top:10px;"></p>
   </div>
@@ -562,14 +562,14 @@
   <h2 class="section-title fade-in">Challenge Generator</h2>
   <div class="info-card fade-in" style="text-align:center;">
     <p>Generate an approved challenge with filters.</p>
-    <select id="challenge-filter-type" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px;">
+    <select id="challenge-filter-type" class="form-input">
       <option value="all">All Types</option>
       <option value="Drinking">Drinking</option>
       <option value="Dares">Dares</option>
       <option value="Team">Team</option>
       <option value="Chill">Chill</option>
     </select>
-    <select id="challenge-filter-difficulty" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px;">
+    <select id="challenge-filter-difficulty" class="form-input">
       <option value="all">All Difficulty</option>
       <option value="Easy">Easy</option>
       <option value="Medium">Medium</option>
@@ -588,8 +588,8 @@
   <h2 class="section-title fade-in">Team Battle Mode</h2>
   <div class="info-card fade-in" style="text-align:center;">
     <p style="opacity:.7; margin-bottom:10px;">Set team names, assign current challenge, and track score.</p>
-    <input type="text" id="team-a-name" placeholder="Team A name" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px;">
-    <input type="text" id="team-b-name" placeholder="Team B name" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px;">
+    <input type="text" id="team-a-name" placeholder="Team A name" class="form-input">
+    <input type="text" id="team-b-name" placeholder="Team B name" class="form-input">
     <button onclick="saveTeamNames()" class="btn btn-gold btn-sm">Save Teams</button>
     <p id="team-scoreboard" style="margin-top:12px; font-weight:600;"></p>
     <button onclick="addTeamPoint('A')" class="btn btn-gold btn-sm mr-6">+1 Team A</button>
@@ -604,9 +604,9 @@
   <h2 class="section-title fade-in">Daily Mission Leaderboard</h2>
   <div class="info-card fade-in" style="text-align:center;">
     <p style="opacity:.7; margin-bottom:10px;">Create missions, assign a team, and award points on completion.</p>
-    <input type="text" id="mission-title" placeholder="Mission title" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:55%;">
-    <input type="number" id="mission-points" min="1" max="10" value="1" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:90px;">
-    <select id="mission-team" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px;">
+    <input type="text" id="mission-title" placeholder="Mission title" class="form-input" style="width:55%;">
+    <input type="number" id="mission-points" min="1" max="10" value="1" class="form-input form-input-num">
+    <select id="mission-team" class="form-input">
       <option value="A">Team A</option>
       <option value="B">Team B</option>
     </select>
@@ -621,9 +621,9 @@
   <h2 class="section-title fade-in">Shared Expense Splitter</h2>
   <div class="info-card fade-in" style="text-align:center;">
     <p style="opacity:.7; margin-bottom:10px;">Track spend and instantly see who owes what.</p>
-    <select id="expense-payer" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px;"></select>
-    <input type="number" id="expense-amount" min="0.01" step="0.01" placeholder="Amount" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:140px;">
-    <input type="text" id="expense-note" placeholder="What was it for?" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:45%;">
+    <select id="expense-payer" class="form-input"></select>
+    <input type="number" id="expense-amount" min="0.01" step="0.01" placeholder="Amount" class="form-input" style="width:140px;">
+    <input type="text" id="expense-note" placeholder="What was it for?" class="form-input" style="width:45%;">
     <button onclick="addExpense()" class="btn btn-gold btn-sm">Add Expense</button>
     <button onclick="clearExpenses()" class="btn btn-outline-light btn-sm ml-6">Clear</button>
     <p id="expense-msg" style="margin-top:10px;"></p>
@@ -662,7 +662,7 @@
   <h2 class="section-title fade-in">Stag Do Poll</h2>
   <div class="info-card fade-in" style="text-align:center;">
     <h3>Choose a poll and vote</h3>
-    <select id="poll-topic" onchange="selectPollTopic()" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px;"></select>
+    <select id="poll-topic" onchange="selectPollTopic()" class="form-input"></select>
     <p id="poll-question" style="margin-top:8px; opacity:.8;"></p>
     <div id="poll-options" style="margin-top:8px;"></div>
     <div id="poll-results" style="display:block; margin-top:20px;">

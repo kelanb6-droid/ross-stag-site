@@ -459,6 +459,36 @@
     will-change:transform;
   }
 
+  /* Gold shimmer on hover for key cards */
+  .info-card:hover h3,
+  .rule-card:hover h3 {
+    text-shadow: 0 0 16px rgba(212,168,67,.3);
+  }
+
+  /* Countdown pulse on zero */
+  .countdown-num.done {
+    color: var(--accent);
+    animation: countDone 1s ease-in-out;
+  }
+  @keyframes countDone {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+  }
+
+  /* Lad card stagger animation */
+  .lad-card.visible { animation: cardPop .5s ease-out both; }
+  .lad-card:nth-child(1).visible { animation-delay: .05s; }
+  .lad-card:nth-child(2).visible { animation-delay: .1s; }
+  .lad-card:nth-child(3).visible { animation-delay: .15s; }
+  .lad-card:nth-child(4).visible { animation-delay: .2s; }
+  .lad-card:nth-child(5).visible { animation-delay: .25s; }
+  .lad-card:nth-child(6).visible { animation-delay: .3s; }
+  @keyframes cardPop {
+    from { opacity: 0; transform: translateY(20px) scale(.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
   /* Welcome greeting bar */
   .welcome-greeting {
     position:fixed; top:0; left:0; right:0; z-index:10005;
@@ -598,6 +628,89 @@
   }
   .ml-6 { margin-left: 6px; }
   .mr-6 { margin-right: 6px; }
+
+  /* ── Form Input Classes ── */
+  .form-input {
+    padding: 10px 14px;
+    margin: 5px;
+    border: 1.5px solid rgba(212,168,67,.25);
+    background: var(--dark);
+    color: var(--cream);
+    border-radius: 8px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    transition: all .3s ease;
+  }
+  .form-input:focus {
+    outline: none;
+    border-color: var(--gold);
+    background: rgba(255,255,255,.08);
+    box-shadow: 0 0 16px rgba(212,168,67,.2);
+  }
+  .form-input-wide { width: 60%; }
+  .form-input-mid { width: 29%; }
+  .form-input-num { width: 90px; }
+
+  /* ── Progress Bar ── */
+  .progress-wrap {
+    margin-top: 20px;
+  }
+  .progress-label {
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    opacity: .5;
+    margin-bottom: 8px;
+  }
+  .progress-track {
+    width: 100%;
+    height: 6px;
+    background: rgba(255,255,255,.1);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--sun));
+    border-radius: 3px;
+    width: 0%;
+    transition: width 1s ease;
+  }
+  .progress-text {
+    font-size: 12px;
+    opacity: .5;
+    margin-top: 4px;
+  }
+  
+  /* ── Experience CTA Buttons ── */
+  .btn-experience {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, var(--gold), var(--sun));
+    color: var(--black);
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: .5px;
+    transition: all .3s ease;
+    box-shadow: 0 4px 16px rgba(212,168,67,.25);
+  }
+  .btn-experience:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(212,168,67,.4);
+  }
+  
+  /* ── Info text helpers ── */
+  .subtle-note {
+    font-size: 12px;
+    opacity: .4;
+    margin-top: 16px;
+    line-height: 1.6;
+  }
+  .text-center { text-align: center; }
+  .mt-20 { margin-top: 20px; }
   button:active {
     transform: scale(0.97) !important;
   }
@@ -945,6 +1058,33 @@
     .icon-btn { width: 46px; height: 46px; font-size: 18px; }
     .icon-btn-secondary { width: 44px; height: 44px; font-size: 15px; }
     section { padding: 72px 20px; }
+    .flight-card { flex-direction: column; gap: 10px; padding: 20px; }
+    .flight-direction { min-width: auto; }
+    .flight-route .airports { font-size: 22px; }
+    .countdown-grid { gap: 16px; }
+    .countdown-num { font-size: clamp(36px, 8vw, 56px); }
+    .cost-total { font-size: 42px; }
+    .cost-breakdown { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .hotel-details { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; }
+    .form-input-wide, .form-input-mid { width: 100%; }
+    .restaurant-card img { height: 140px; }
+    .schedule-item { flex-direction: column; gap: 6px; padding: 18px 0; }
+    .schedule-time { min-width: auto; font-size: 15px; }
+    .admin-add-row { flex-direction: column; }
+    .admin-input { width: 100%; min-width: auto; }
+    .btn-experience { display: block; text-align: center; }
+    #scroll-top-btn { bottom: 16px; right: 16px; width: 42px; height: 42px; font-size: 18px; }
+  }
+
+  @media (max-width: 420px) {
+    .hero h1 { letter-spacing: 5px; }
+    .hero h2 { letter-spacing: 6px; }
+    .lads-grid { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; }
+    .rules-grid { grid-template-columns: 1fr; }
+    .info-grid { grid-template-columns: 1fr; }
+    .restaurant-grid { grid-template-columns: 1fr; }
+    .countdown { padding: 28px 16px; }
+    .rsvp-btn { padding: 14px 36px; font-size: 20px; letter-spacing: 4px; }
   }
 
   @media (prefers-reduced-motion: reduce) {
