@@ -18,6 +18,9 @@
   document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
 
   const navGroups = Array.from(document.querySelectorAll('.nav-group'));
+  const navToggles = navGroups
+    .map(function (group) { return group.querySelector('.nav-group-toggle'); })
+    .filter(Boolean);
   const navLinks = Array.from(document.querySelectorAll('.top-sub-link'));
   const navMap = navLinks
     .map(link => {
@@ -48,6 +51,31 @@
     });
   }
 
+  function openMenu(group) {
+    if (!group) return;
+    const toggle = group.querySelector('.nav-group-toggle');
+    if (!toggle) return;
+    closeOpenMenus(group);
+    group.classList.add('open');
+    toggle.setAttribute('aria-expanded', 'true');
+  }
+
+  function getGroupMenuLinks(group) {
+    if (!group) return [];
+    return Array.from(group.querySelectorAll('.nav-group-menu .top-sub-link'));
+  }
+
+  function focusToggleByOffset(currentToggle, offset) {
+    if (!currentToggle || !navToggles.length) return;
+    const currentIndex = navToggles.indexOf(currentToggle);
+    if (currentIndex === -1) return;
+    const nextIndex = (currentIndex + offset + navToggles.length) % navToggles.length;
+    const nextToggle = navToggles[nextIndex];
+    if (!nextToggle) return;
+    closeOpenMenus(null);
+    nextToggle.focus();
+  }
+
   navGroups.forEach(group => {
     const toggle = group.querySelector('.nav-group-toggle');
     if (!toggle) return;
@@ -58,11 +86,37 @@
       group.classList.toggle('open', willOpen);
       toggle.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
     });
+    toggle.addEventListener('keydown', function (event) {
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        openMenu(group);
+        const links = getGroupMenuLinks(group);
+        if (links.length) links[0].focus();
+        return;
+      }
+      if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        focusToggleByOffset(toggle, 1);
+        return;
+      }
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        focusToggleByOffset(toggle, -1);
+      }
+    });
   });
 
   navLinks.forEach(link => {
     link.addEventListener('click', function () {
       closeOpenMenus(null);
+    });
+    link.addEventListener('keydown', function (event) {
+      if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+      const parentGroup = link.closest('.nav-group');
+      const parentToggle = parentGroup ? parentGroup.querySelector('.nav-group-toggle') : null;
+      if (!parentToggle) return;
+      event.preventDefault();
+      focusToggleByOffset(parentToggle, event.key === 'ArrowRight' ? 1 : -1);
     });
   });
 
@@ -72,7 +126,22 @@
   });
 
   document.addEventListener('keydown', function (event) {
-    if (event.key === 'Escape') closeOpenMenus(null);
+    if (event.key !== 'Escape') return;
+    const openGroup = navGroups.find(function (group) { return group.classList.contains('open'); });
+    closeOpenMenus(null);
+    if (openGroup) {
+      const toggle = openGroup.querySelector('.nav-group-toggle');
+      if (toggle) toggle.focus();
+    }
+  });
+
+  document.addEventListener('focusin', function (event) {
+    const insideNav = event.target && event.target.closest && event.target.closest('.top-nav');
+    if (!insideNav) closeOpenMenus(null);
+  });
+
+  window.addEventListener('scroll', function () {
+    closeOpenMenus(null);
   });
 
   if (navMap.length) {
@@ -292,6 +361,11 @@
   let challengeVoteLog = loadJSON('challengeVoteLog', {});
   let challengeReportLog = loadJSON('challengeReportLog', {});
   let challengeSubmissionLog = loadJSON('challengeSubmissionLog', {});
+  const challengeSyncEndpoint = '/.netlify/functions/challenge-state';
+  const netlifyChallengeSyncEnabled = typeof window !== 'undefined' && /^https?:$/i.test(window.location.protocol || '');
+  let challengeSyncInFlight = false;
+  let challengeSyncQueued = false;
+  let lastChallengeSyncHash = '';
   let scheduleSubmissionLog = loadJSON('scheduleSubmissionLog', {});
   let siteChangeSubmissionLog = loadJSON('siteChangeSubmissionLog', {});
   let pendingScheduleSuggestions = loadJSON('pendingScheduleSuggestions', []);
@@ -401,6 +475,92 @@
     saveJSON('missionBoard', missionBoard);
     saveJSON('expenseEntries', expenseEntries);
     saveJSON('pollBoard', pollBoard);
+    queueChallengeStateSync(false);
+  }
+
+  function getChallengeStatePayload() {
+    return {
+      pendingChallenges: pendingChallenges,
+      approvedChallenges: approvedChallenges,
+      challengeVoteLog: challengeVoteLog,
+      challengeReportLog: challengeReportLog,
+      challengeSubmissionLog: challengeSubmissionLog
+    };
+  }
+
+  function hashChallengePayload(payload) {
+    try {
+      return JSON.stringify(payload);
+    } catch (e) {
+      return '';
+    }
+  }
+
+  function applyChallengeStatePayload(payload) {
+    if (!payload || typeof payload !== 'object') return;
+    if (Array.isArray(payload.pendingChallenges)) pendingChallenges = payload.pendingChallenges;
+    if (Array.isArray(payload.approvedChallenges)) approvedChallenges = payload.approvedChallenges;
+    if (payload.challengeVoteLog && typeof payload.challengeVoteLog === 'object') challengeVoteLog = payload.challengeVoteLog;
+    if (payload.challengeReportLog && typeof payload.challengeReportLog === 'object') challengeReportLog = payload.challengeReportLog;
+    if (payload.challengeSubmissionLog && typeof payload.challengeSubmissionLog === 'object') challengeSubmissionLog = payload.challengeSubmissionLog;
+  }
+
+  function queueChallengeStateSync(force) {
+    if (!netlifyChallengeSyncEnabled) return;
+    const payload = getChallengeStatePayload();
+    const payloadHash = hashChallengePayload(payload);
+    if (!force && payloadHash && payloadHash === lastChallengeSyncHash) return;
+    if (challengeSyncInFlight) {
+      challengeSyncQueued = true;
+      return;
+    }
+    challengeSyncInFlight = true;
+    fetch(challengeSyncEndpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+      .then(function (res) {
+        if (!res.ok) throw new Error('Sync failed');
+        return res.json();
+      })
+      .then(function (body) {
+        if (!body || !body.ok || !body.state) return;
+        applyChallengeStatePayload(body.state);
+        lastChallengeSyncHash = hashChallengePayload(getChallengeStatePayload());
+      })
+      .catch(function () {
+        // Silent fallback to local-only behavior when cloud sync is unavailable.
+      })
+      .finally(function () {
+        challengeSyncInFlight = false;
+        if (!challengeSyncQueued) return;
+        challengeSyncQueued = false;
+        queueChallengeStateSync(true);
+      });
+  }
+
+  async function loadChallengeStateFromCloud() {
+    if (!netlifyChallengeSyncEnabled) return false;
+    try {
+      const res = await fetch(challengeSyncEndpoint, {
+        method: 'GET',
+        cache: 'no-store'
+      });
+      if (!res.ok) return false;
+      const body = await res.json();
+      if (!body || !body.ok || !body.state) return false;
+      applyChallengeStatePayload(body.state);
+      lastChallengeSyncHash = hashChallengePayload(getChallengeStatePayload());
+      saveJSON('pendingChallenges', pendingChallenges);
+      saveJSON('approvedChallenges', approvedChallenges);
+      saveJSON('challengeVoteLog', challengeVoteLog);
+      saveJSON('challengeReportLog', challengeReportLog);
+      saveJSON('challengeSubmissionLog', challengeSubmissionLog);
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   function getChallengeKey(challenge) {
@@ -2235,6 +2395,10 @@
   populateExpensePayerOptions();
   renderExpenseBoard();
   renderPollBoard();
+  loadChallengeStateFromCloud().then(function (loaded) {
+    if (!loaded) return;
+    updateCrewAccess();
+  });
   if (punishmentHistory.length) {
     const result = document.getElementById('punishment-result');
     const history = document.getElementById('punishment-history');

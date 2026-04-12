@@ -3,3 +3,7 @@
 !rossstag.html
 !rossstag.css
 !rossstag.js
+!package.json
+!netlify.toml
+!netlify/
+!netlify/**

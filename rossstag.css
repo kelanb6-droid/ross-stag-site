@@ -38,10 +38,8 @@
     background: linear-gradient(180deg, rgba(10,10,10,.9), rgba(10,10,10,.7));
     backdrop-filter: blur(10px);
     box-shadow: 0 10px 34px rgba(0,0,0,.45);
-    overflow-x: auto;
-    scrollbar-width: none;
+    overflow: visible;
   }
-  .top-nav::-webkit-scrollbar { display: none; }
   .top-nav-inner {
     display: flex;
     align-items: center;
@@ -49,7 +47,11 @@
     gap: 8px;
     min-width: max-content;
     padding: 10px;
+    overflow-x: auto;
+    overflow-y: visible;
+    scrollbar-width: none;
   }
+  .top-nav-inner::-webkit-scrollbar { display: none; }
   .top-nav-brand {
     font-family: 'Bebas Neue', sans-serif;
     letter-spacing: 2px;
@@ -107,9 +109,13 @@
     display: none;
     z-index: 10002;
   }
-  .nav-group:hover .nav-group-menu,
   .nav-group.open .nav-group-menu {
     display: block;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .nav-group:hover .nav-group-menu {
+      display: block;
+    }
   }
   .top-sub-link {
     display: block;
