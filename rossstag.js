@@ -1250,6 +1250,7 @@
     const suggestionSection = document.getElementById('suggestion-section');
     const bestmanSection = document.getElementById('bestman-approval-section');
     const scheduleSection = document.getElementById('trip-schedule-section');
+    const itinerarySection = document.getElementById('itinerary-section');
     const secretOptional = document.getElementById('crew-only-optional');
     const loginOverlay = document.getElementById('login-overlay');
     const logoutButton = document.getElementById('crew-logout-btn');
@@ -1266,6 +1267,7 @@
     if (suggestionSection) suggestionSection.style.display = (loggedIn && !isGroom) ? 'block' : 'none';
     if (bestmanSection) bestmanSection.style.display = isAdmin ? 'block' : 'none';
     if (scheduleSection) scheduleSection.style.display = (loggedIn && (!isGroom || groomUnlocked)) ? 'block' : 'none';
+    if (itinerarySection) itinerarySection.style.display = (loggedIn && (!isGroom || groomUnlocked)) ? 'block' : 'none';
     if (secretOptional) secretOptional.style.display = (loggedIn && (!isGroom || groomUnlocked)) ? 'block' : 'none';
     if (groomTeaseSection) groomTeaseSection.style.display = (loggedIn && isGroom && !groomUnlocked) ? 'block' : 'none';
     if (loggedIn && isGroom && !groomUnlocked) startGroomCountdown(groomUnlockDate);
