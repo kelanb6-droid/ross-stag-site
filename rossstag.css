@@ -32,7 +32,7 @@
     left: 50%;
     transform: translateX(-50%);
     width: min(1120px, calc(100% - 20px));
-    z-index: 10000;
+    z-index: 10020;
     border: 1px solid rgba(212,168,67,.28);
     border-radius: 14px;
     background: linear-gradient(180deg, rgba(10,10,10,.9), rgba(10,10,10,.7));
@@ -1246,7 +1246,7 @@
     position: fixed;
     inset: 0;
     background: rgba(10,10,10,.94);
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     z-index: 10010;
