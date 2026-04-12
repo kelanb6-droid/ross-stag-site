@@ -434,6 +434,7 @@
   const supabaseAnonKey = 'sb_publishable_UQ4qHzfw9LV833yGydpPtQ_bsm9sXEh';
   const supabaseChallengeStateTable = 'challenge_state';
   const supabaseCrewLoginTable = 'crew_login_profiles';
+  const supabaseTripDetailsTable = 'trip_details';
   const challengeCloudSyncEnabled = typeof window !== 'undefined'
     && /^https?:$/i.test(window.location.protocol || '')
     && !!supabaseUrl
@@ -912,12 +913,72 @@
     return cleanBase + '/rest/v1/' + supabaseCrewLoginTable + (query || '');
   }
 
+  function getSupabaseTripDetailsEndpoint(query) {
+    const cleanBase = String(supabaseUrl || '').replace(/\/$/, '');
+    return cleanBase + '/rest/v1/' + supabaseTripDetailsTable + (query || '');
+  }
+
   function getSupabaseHeaders() {
     return {
       apikey: supabaseAnonKey,
       Authorization: 'Bearer ' + supabaseAnonKey,
       'Content-Type': 'application/json'
     };
+  }
+
+  function normalizePhoneHref(value) {
+    const text = sanitizeText(value, 60);
+    if (!text) return '';
+    const digits = text.replace(/[^\d+]/g, '');
+    if (!digits) return '';
+    return digits.charAt(0) === '+' ? digits : '+' + digits;
+  }
+
+  function setTripDetailText(id, value, fallback) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const safe = sanitizeText(value, 120) || fallback;
+    el.textContent = safe;
+  }
+
+  function setTripDetailPhone(id, value, fallback) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const safe = sanitizeText(value, 60) || fallback;
+    const phoneHref = normalizePhoneHref(safe);
+    el.textContent = safe;
+    el.setAttribute('href', phoneHref ? ('tel:' + phoneHref) : '#');
+  }
+
+  function applyTripDetails(details) {
+    const data = details && typeof details === 'object' ? details : {};
+    setTripDetailText('hotel-booking-code', data.hotelBookingCode, 'Unavailable');
+    setTripDetailText('transfer-booking-code', data.transferBookingCode, 'Unavailable');
+    setTripDetailText('trip-code', data.tripCode, 'Unavailable');
+    const transferEmergencyPhone = sanitizeText(data.transferEmergencyPhone, 60) || 'Unavailable';
+    setTripDetailText('transfer-emergency-number', transferEmergencyPhone, 'Unavailable');
+    setTripDetailPhone('support-phone-link', data.supportPhone, 'Unavailable');
+    setTripDetailPhone('transfer-emergency-link', transferEmergencyPhone, 'Unavailable');
+    setTripDetailPhone('transfer-emergency-alt-link', data.transferEmergencyAltPhone, 'Unavailable');
+  }
+
+  async function loadTripDetailsFromCloud() {
+    applyTripDetails({});
+    if (!supabaseUrl || !supabaseAnonKey) return false;
+    try {
+      const res = await fetch(getSupabaseTripDetailsEndpoint('?id=eq.1&select=details'), {
+        method: 'GET',
+        headers: getSupabaseHeaders(),
+        cache: 'no-store'
+      });
+      if (!res.ok) return false;
+      const rows = await res.json();
+      if (!Array.isArray(rows) || !rows.length || !rows[0] || !rows[0].details) return false;
+      applyTripDetails(rows[0].details);
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   function queueChallengeStateSync(force) {
@@ -2904,6 +2965,7 @@
   }
   initPackingList();
   refreshChallengeUiFromState();
+  loadTripDetailsFromCloud();
   loadCrewLoginProfilesFromCloud();
   loadChallengeStateFromCloud().then(function (loaded) {
     if (!loaded) return;

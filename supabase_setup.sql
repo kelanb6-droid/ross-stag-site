@@ -71,3 +71,49 @@ on conflict (crew_code) do update
 set aliases = excluded.aliases,
     active = excluded.active,
     updated_at = now();
+
+-- Trip booking/support details shown in the UI.
+create table if not exists public.trip_details (
+  id bigint primary key,
+  details jsonb not null default '{}'::jsonb,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.trip_details enable row level security;
+grant select on table public.trip_details to anon;
+
+drop policy if exists "trip_details_public_read" on public.trip_details;
+create policy "trip_details_public_read"
+on public.trip_details
+for select
+to anon
+using (id = 1);
+
+insert into public.trip_details (id, details)
+values (
+  1,
+  jsonb_build_object(
+    'hotelBookingCode', 'SET_IN_SUPABASE',
+    'transferBookingCode', 'SET_IN_SUPABASE',
+    'tripCode', 'SET_IN_SUPABASE',
+    'supportPhone', 'SET_IN_SUPABASE',
+    'transferEmergencyPhone', 'SET_IN_SUPABASE',
+    'transferEmergencyAltPhone', 'SET_IN_SUPABASE'
+  )
+)
+on conflict (id) do update
+set details = excluded.details,
+    updated_at = now();
+
+-- Example (replace placeholders in Supabase SQL editor, not in repo files):
+-- update public.trip_details
+-- set details = jsonb_build_object(
+--   'hotelBookingCode', 'YOUR_VALUE',
+--   'transferBookingCode', 'YOUR_VALUE',
+--   'tripCode', 'YOUR_VALUE',
+--   'supportPhone', 'YOUR_VALUE',
+--   'transferEmergencyPhone', 'YOUR_VALUE',
+--   'transferEmergencyAltPhone', 'YOUR_VALUE'
+-- ),
+-- updated_at = now()
+-- where id = 1;

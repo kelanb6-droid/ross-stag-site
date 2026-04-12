@@ -146,7 +146,7 @@
       <div class="hotel-detail-item"><div class="hotel-detail-label">Nights</div><div class="hotel-detail-value">3</div></div>
       <div class="hotel-detail-item"><div class="hotel-detail-label">Rooms</div><div class="hotel-detail-value">3 Triple</div></div>
       <div class="hotel-detail-item"><div class="hotel-detail-label">Board</div><div class="hotel-detail-value">Room Only</div></div>
-      <div class="hotel-detail-item"><div class="hotel-detail-label">Code</div><div class="hotel-detail-value" style="font-size:12px;font-family:monospace;">OTBH2189476</div></div>
+      <div class="hotel-detail-item"><div class="hotel-detail-label">Code</div><div class="hotel-detail-value" id="hotel-booking-code" style="font-size:12px;font-family:monospace;">Loading...</div></div>
     </div>
     <p style="font-size:12px; opacity:.4; margin-top:20px; line-height:1.6;">Tourism tax ~&#8364;1.10/person/night. Hotel may request a security deposit at check-in.</p>
     <p><a href="https://maps.google.com/?q=Htop+BCN+City,+Calle+Travessera+De+Gracia,+Barcelona+08025" target="_blank" rel="noopener noreferrer" style="color:var(--gold); text-decoration:none;">View Hotel on Google Maps</a></p>
@@ -161,8 +161,8 @@
     <div class="hotel-details">
       <div class="hotel-detail-item"><div class="hotel-detail-label">Arrival Pickup</div><div class="hotel-detail-value">3 May, 09:50</div></div>
       <div class="hotel-detail-item"><div class="hotel-detail-label">Return Pickup</div><div class="hotel-detail-value">6 May (TBC)</div></div>
-      <div class="hotel-detail-item"><div class="hotel-detail-label">Code</div><div class="hotel-detail-value" style="font-size:12px;font-family:monospace;">RT-4125725</div></div>
-      <div class="hotel-detail-item"><div class="hotel-detail-label">Emergency</div><div class="hotel-detail-value" style="font-size:11px;">+34 871 556 827</div></div>
+      <div class="hotel-detail-item"><div class="hotel-detail-label">Code</div><div class="hotel-detail-value" id="transfer-booking-code" style="font-size:12px;font-family:monospace;">Loading...</div></div>
+      <div class="hotel-detail-item"><div class="hotel-detail-label">Emergency</div><div class="hotel-detail-value" id="transfer-emergency-number" style="font-size:11px;">Loading...</div></div>
     </div>
     <p style="font-size:12px; opacity:.4; margin-top:20px; line-height:1.6;">Driver meets you at arrivals with a name sign. Return pickup time available 24hrs before at customer.suntransfers.com/on-the-beach.</p>
   </div>
@@ -235,9 +235,9 @@
 <section id="info-section">
   <h2 class="section-title fade-in">Need to Know</h2>
   <div class="info-grid">
-    <div class="info-card fade-in"><h3>Trip Code</h3><p style="font-family:monospace;font-size:16px;opacity:1;color:var(--gold);">MYB14642185B</p><p>On the Beach code. Keep it safe.</p></div>
-    <div class="info-card fade-in"><h3>In-Resort Support</h3><p><a href="tel:+443330031934">+44 (0) 333 003 1934</a></p><p>On the Beach support if anything goes wrong.</p></div>
-    <div class="info-card fade-in"><h3>Transfer Emergency</h3><p><a href="tel:+34871556827">+34 871 556 827</a></p><p>Suntransfers 24/7. Also: <a href="tel:+442045879973">+44 20 4587 9973</a></p></div>
+    <div class="info-card fade-in"><h3>Trip Code</h3><p id="trip-code" style="font-family:monospace;font-size:16px;opacity:1;color:var(--gold);">Loading...</p><p>On the Beach code. Keep it safe.</p></div>
+    <div class="info-card fade-in"><h3>In-Resort Support</h3><p><a id="support-phone-link" href="#">Loading...</a></p><p>On the Beach support if anything goes wrong.</p></div>
+    <div class="info-card fade-in"><h3>Transfer Emergency</h3><p><a id="transfer-emergency-link" href="#">Loading...</a></p><p>Suntransfers 24/7. Also: <a id="transfer-emergency-alt-link" href="#">Loading...</a></p></div>
     <div class="info-card fade-in"><h3>Travel Advice</h3><p><a href="https://www.gov.uk/foreign-travel-advice/spain" target="_blank" rel="noopener noreferrer">gov.uk/foreign-travel-advice/spain</a></p><p>Passport &amp; visa info for Spain.</p></div>
   </div>
 </section>
