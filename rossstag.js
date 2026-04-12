@@ -1867,20 +1867,22 @@
     const isAdmin = crewBday === bmBday;
     const groomUnlockDate = new Date('2026-05-03T09:50:00').getTime();
     const groomUnlocked = isGroom && Date.now() >= groomUnlockDate;
+    const canViewSchedule = !!loggedIn && (isAdmin || !isGroom || groomUnlocked);
     const groomTeaseSection = document.getElementById('groom-schedule-tease');
     if (suggestionSection) suggestionSection.style.display = (loggedIn && !isGroom) ? 'block' : 'none';
     if (bestmanSection) bestmanSection.style.display = isAdmin ? 'block' : 'none';
-    if (scheduleSection) scheduleSection.style.display = (loggedIn && (!isGroom || groomUnlocked)) ? 'block' : 'none';
-    if (itinerarySection) itinerarySection.style.display = (loggedIn && (!isGroom || groomUnlocked)) ? 'block' : 'none';
-    if (secretOptional) secretOptional.style.display = (loggedIn && (!isGroom || groomUnlocked)) ? 'block' : 'none';
+    if (scheduleSection) scheduleSection.style.display = canViewSchedule ? 'block' : 'none';
+    if (itinerarySection) itinerarySection.style.display = canViewSchedule ? 'block' : 'none';
+    if (secretOptional) secretOptional.style.display = canViewSchedule ? 'block' : 'none';
     if (groomTeaseSection) groomTeaseSection.style.display = (loggedIn && isGroom && !groomUnlocked) ? 'block' : 'none';
     if (loggedIn && isGroom && !groomUnlocked) startGroomCountdown(groomUnlockDate);
     if (loginOverlay) loginOverlay.style.display = loggedIn ? 'none' : 'flex';
     if (logoutButton) logoutButton.style.display = loggedIn ? 'block' : 'none';
     document.body.classList.toggle('overlay-active', !loggedIn);
     updateLadsPersonalization();
+    const approvalPanel = document.getElementById('approval-panel');
     if (isAdmin) {
-      document.getElementById('approval-panel').style.display = 'block';
+      if (approvalPanel) approvalPanel.style.display = 'block';
       displayJoshuaApprovalList();
       displayPendingChallenges();
       displayPendingScheduleSuggestions();
@@ -1892,7 +1894,7 @@
         if (adminSec) adminSec.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }, 400);
     } else {
-      document.getElementById('approval-panel').style.display = 'none';
+      if (approvalPanel) approvalPanel.style.display = 'none';
       document.body.classList.remove('admin-mode');
     }
     if (loggedIn) displayApprovedChallenges();
