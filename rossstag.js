@@ -115,16 +115,12 @@
   const bmBday = '160698';
   const defaultCrewCodes = [
     bmBday,
-    '180997',
     '230997',
     '270298',
     '120398',
-    '201197',
-    '080997',
-    '240598',
-    '220997'
+    '240598'
   ];
-  const legacyCrewCodes = ['270597', '140697'];
+  const legacyCrewCodes = [];
   var loadedCrew = loadJSON('allowedCrewBdays', defaultCrewCodes);
   if (!Array.isArray(loadedCrew)) loadedCrew = defaultCrewCodes;
   const allowedCrewBdays = new Set(
@@ -138,7 +134,6 @@
   const crewNameByBday = {
     '170997': 'Ross',
     '160698': 'Joshua',
-    '180997': 'Crew',
     '230997': 'Emmanuel',
     '270298': 'Kelan',
     '120398': 'Jack',

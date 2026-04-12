@@ -1140,6 +1140,161 @@
     box-shadow: 0 8px 24px rgba(212,168,67,.4);
   }
 
+  /* Modern UI refresh layer */
+  :root {
+    --surface: rgba(255,255,255,.03);
+    --surface-strong: rgba(255,255,255,.06);
+    --surface-border: rgba(255,255,255,.08);
+    --radius-lg: 18px;
+    --radius-md: 14px;
+  }
+
+  body {
+    background:
+      radial-gradient(1200px 700px at 5% -15%, rgba(201,56,42,.18), transparent 55%),
+      radial-gradient(900px 520px at 95% 0%, rgba(212,168,67,.15), transparent 60%),
+      var(--black);
+  }
+
+  .top-nav {
+    border-radius: 18px;
+    border-color: rgba(212,168,67,.28);
+    background: linear-gradient(180deg, rgba(12,12,12,.82), rgba(12,12,12,.66));
+    backdrop-filter: blur(14px) saturate(120%);
+  }
+
+  section {
+    max-width: 1020px;
+    padding: 92px 28px;
+  }
+
+  .section-title {
+    letter-spacing: 3px;
+    margin-bottom: 28px;
+  }
+
+  .countdown,
+  .flight-card,
+  .hotel-card,
+  .cost-card,
+  .rule-card,
+  .info-card,
+  .lad-card,
+  .restaurant-card,
+  .dynamic-card {
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--surface-border);
+    background: linear-gradient(165deg, var(--surface-strong), var(--surface));
+    box-shadow: 0 20px 45px rgba(0,0,0,.28);
+  }
+
+  .countdown,
+  .flight-card,
+  .hotel-card,
+  .cost-card,
+  .rule-card,
+  .info-card,
+  .lad-card,
+  .restaurant-card {
+    backdrop-filter: blur(6px);
+  }
+
+  .rule-card:hover,
+  .info-card:hover,
+  .flight-card:hover,
+  .hotel-card:hover,
+  .cost-card:hover,
+  .lad-card:hover,
+  .restaurant-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(212,168,67,.45);
+    box-shadow: 0 24px 48px rgba(0,0,0,.34), 0 0 0 1px rgba(212,168,67,.18) inset;
+  }
+
+  .hero h1 {
+    letter-spacing: 8px;
+    text-shadow: 0 0 70px rgba(212,168,67,.25);
+  }
+
+  .hero h2 {
+    letter-spacing: 9px;
+  }
+
+  .btn,
+  .btn-sm,
+  .rsvp-btn,
+  .icon-btn,
+  #scroll-top-btn {
+    border-radius: 999px;
+  }
+
+  .btn {
+    padding: 12px 24px;
+    font-size: 13px;
+    letter-spacing: .6px;
+    text-transform: uppercase;
+  }
+
+  .btn-sm {
+    padding: 9px 15px;
+    font-size: 12px;
+  }
+
+  input[type="text"],
+  input[type="password"],
+  input[type="url"],
+  input[type="number"],
+  select,
+  textarea,
+  .form-input {
+    border-radius: var(--radius-md);
+    border-color: rgba(212,168,67,.22);
+    background: rgba(255,255,255,.04);
+  }
+
+  input[type="text"]:focus,
+  input[type="password"]:focus,
+  input[type="url"]:focus,
+  input[type="number"]:focus,
+  select:focus,
+  textarea:focus,
+  .form-input:focus {
+    box-shadow: 0 0 0 3px rgba(212,168,67,.2), 0 0 18px rgba(212,168,67,.18);
+  }
+
+  .light-theme {
+    --surface: rgba(0,0,0,.02);
+    --surface-strong: rgba(0,0,0,.04);
+    --surface-border: rgba(0,0,0,.1);
+  }
+
+  .light-theme body {
+    background:
+      radial-gradient(1200px 700px at 5% -15%, rgba(201,56,42,.08), transparent 55%),
+      radial-gradient(900px 520px at 95% 0%, rgba(212,168,67,.1), transparent 60%),
+      var(--black);
+  }
+
+  .light-theme .top-nav {
+    background: linear-gradient(180deg, rgba(255,255,255,.9), rgba(255,255,255,.76));
+    border-color: rgba(0,0,0,.14);
+    box-shadow: 0 10px 28px rgba(0,0,0,.12);
+  }
+
+  .light-theme .countdown,
+  .light-theme .flight-card,
+  .light-theme .hotel-card,
+  .light-theme .cost-card,
+  .light-theme .rule-card,
+  .light-theme .info-card,
+  .light-theme .lad-card,
+  .light-theme .restaurant-card,
+  .light-theme .dynamic-card {
+    background: linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,255,255,.9));
+    border-color: rgba(0,0,0,.1);
+    box-shadow: 0 14px 30px rgba(0,0,0,.08);
+  }
+
   @media (max-width: 720px) {
     body { scroll-padding-top: 96px; }
     .top-nav { top: 8px; width: calc(100% - 12px); border-radius: 12px; }
