@@ -977,6 +977,7 @@
   }
 
   function refreshChallengeUiFromState() {
+    refreshPendingChallengeViews();
     updateTeamBattleUI();
     renderMissionBoard();
     populateExpensePayerOptions();
@@ -1431,7 +1432,7 @@
     msg.style.color = 'var(--gold)';
     titleInput.value = '';
     notesInput.value = '';
-    displayPendingChallenges();
+    refreshPendingChallengeViews();
   }
 
   function suggestScheduleItem() {
@@ -2343,6 +2344,7 @@
       if (approvalPanel) approvalPanel.style.display = 'none';
       document.body.classList.remove('admin-mode');
     }
+    displayPublicPendingChallenges(loggedIn);
     if (loggedIn) displayApprovedChallenges();
     displayApprovedScheduleSuggestions();
     displayApprovedSiteChangeSuggestions();
@@ -2461,6 +2463,24 @@
     return div;
   }
 
+  function formatRelativeTime(timestamp) {
+    const ts = Number(timestamp) || 0;
+    if (!ts) return '';
+    const diffMs = Math.max(0, Date.now() - ts);
+    const mins = Math.floor(diffMs / 60000);
+    if (mins < 1) return 'just now';
+    if (mins < 60) return mins + ' min ago';
+    const hours = Math.floor(mins / 60);
+    if (hours < 24) return hours + 'h ago';
+    const days = Math.floor(hours / 24);
+    return days + 'd ago';
+  }
+
+  function refreshPendingChallengeViews() {
+    displayPendingChallenges();
+    displayPublicPendingChallenges(!!getCrewBday());
+  }
+
   function displayPendingChallenges() {
     const container = document.getElementById('pending-challenges');
     if (!container) return;
@@ -2469,7 +2489,10 @@
       container.innerHTML = '<p style="opacity:.6;">No pending challenges.</p>';
       return;
     }
-    pendingChallenges.forEach(item => {
+    pendingChallenges
+      .slice()
+      .sort(function (a, b) { return (b.createdAt || 0) - (a.createdAt || 0); })
+      .forEach(function (item) {
       const div = makeCard();
 
       const title = document.createElement('p');
@@ -2480,7 +2503,7 @@
 
       const meta = document.createElement('p');
       meta.className = 'dynamic-card-meta';
-      meta.textContent = item.type + ' • ' + item.difficulty + ' • by ' + item.suggestedBy;
+      meta.textContent = item.type + ' • ' + item.difficulty + ' • by ' + getCrewDisplayName(item.suggestedBy);
       div.appendChild(meta);
 
       const notes = document.createElement('p');
@@ -2506,20 +2529,73 @@
     });
   }
 
+  function displayPublicPendingChallenges(loggedIn) {
+    const container = document.getElementById('pending-challenges-public');
+    const summary = document.getElementById('pending-challenges-public-summary');
+    const updated = document.getElementById('pending-challenges-public-updated');
+    if (!container) return;
+    clearElement(container);
+    if (summary) summary.textContent = '';
+    if (updated) updated.textContent = '';
+    if (!loggedIn) {
+      container.innerHTML = '<p style="opacity:.6;">Log in to view pending challenge suggestions.</p>';
+      return;
+    }
+    if (!pendingChallenges.length) {
+      if (summary) summary.textContent = '0 pending suggestions';
+      container.innerHTML = '<p style="opacity:.6;">No pending challenges right now.</p>';
+      return;
+    }
+    const sorted = pendingChallenges
+      .slice()
+      .sort(function (a, b) { return (b.createdAt || 0) - (a.createdAt || 0); });
+    const latest = sorted[0];
+    const latestBy = latest ? getCrewDisplayName(latest.suggestedBy) : 'Crew';
+    if (summary) {
+      summary.textContent = String(sorted.length) + ' pending suggestions • latest from ' + latestBy;
+    }
+    if (updated) {
+      updated.textContent = latest && latest.createdAt
+        ? 'Last submission: ' + formatRelativeTime(latest.createdAt)
+        : 'Last submission: unknown';
+    }
+    sorted.forEach(function (item) {
+        const div = makeCard();
+
+        const title = document.createElement('p');
+        const strong = document.createElement('strong');
+        strong.textContent = item.title;
+        title.appendChild(strong);
+        div.appendChild(title);
+
+        const meta = document.createElement('p');
+        meta.className = 'dynamic-card-meta';
+        meta.textContent = item.type + ' • ' + item.difficulty + ' • suggested by ' + getCrewDisplayName(item.suggestedBy);
+        div.appendChild(meta);
+
+        const notes = document.createElement('p');
+        notes.className = 'dynamic-card-text';
+        notes.textContent = item.notes || 'No extra notes.';
+        div.appendChild(notes);
+
+        container.appendChild(div);
+      });
+  }
+
   function approveChallenge(id) {
     const index = pendingChallenges.findIndex(item => item.id === id);
     if (index === -1) return;
     const challenge = pendingChallenges.splice(index, 1)[0];
     approvedChallenges.push(challenge);
     saveChallengeData();
-    displayPendingChallenges();
+    refreshPendingChallengeViews();
     displayApprovedChallenges();
   }
 
   function rejectChallenge(id) {
     pendingChallenges = pendingChallenges.filter(item => item.id !== id);
     saveChallengeData();
-    displayPendingChallenges();
+    refreshPendingChallengeViews();
   }
 
   function displayApprovedChallenges() {
@@ -2544,7 +2620,7 @@
 
       const meta = document.createElement('p');
       meta.className = 'dynamic-card-meta';
-      meta.textContent = item.type + ' • ' + item.difficulty + ' • by ' + item.suggestedBy;
+      meta.textContent = item.type + ' • ' + item.difficulty + ' • by ' + getCrewDisplayName(item.suggestedBy);
       div.appendChild(meta);
 
       const notes = document.createElement('p');
