@@ -495,8 +495,51 @@
       <p><strong>From Htop BCN City:</strong> ~1.2 km, 12-18 min walk or 5 min taxi.</p>
       <p><a href="https://maps.google.com/?q=Sagrada+Familia+Barcelona" target="_blank" rel="noopener noreferrer">Open in Maps</a></p>
     </div>
+    <div class="info-card fade-in">
+      <h3>Paintball / Airsoft</h3>
+      <p><strong>Price:</strong> EUR 25-45 per person for a 2-hour session with gear.</p>
+      <p><strong>From Htop BCN City:</strong> ~8-15 km depending on venue, 20-30 min taxi.</p>
+      <p><a href="https://www.google.com/maps/search/paintball+barcelona" target="_blank" rel="noopener noreferrer">Find Paintball Venues</a></p>
+    </div>
+    <div class="info-card fade-in">
+      <h3>Jet Ski Rental</h3>
+      <p><strong>Price:</strong> EUR 60-100 per jet ski for 30 mins. Group deals often available.</p>
+      <p><strong>From Htop BCN City:</strong> ~5 km to Port Olimpic, 15-20 min taxi.</p>
+      <p><a href="https://www.google.com/maps/search/jet+ski+rental+barcelona" target="_blank" rel="noopener noreferrer">Find Jet Ski Operators</a></p>
+    </div>
+    <div class="info-card fade-in">
+      <h3>Pub Crawl (Guided)</h3>
+      <p><strong>Price:</strong> EUR 15-25 per person with free shots and club entry.</p>
+      <p><strong>From Htop BCN City:</strong> most start in Gothic Quarter, ~4 km, 15 min taxi.</p>
+      <p><a href="https://www.google.com/maps/search/pub+crawl+barcelona" target="_blank" rel="noopener noreferrer">Find Pub Crawls</a></p>
+    </div>
+    <div class="info-card fade-in">
+      <h3>Cooking Class (Paella / Tapas)</h3>
+      <p><strong>Price:</strong> EUR 50-75 per person including food and drinks.</p>
+      <p><strong>From Htop BCN City:</strong> most in central BCN, ~2-4 km, 10-15 min taxi.</p>
+      <p><a href="https://www.google.com/maps/search/cooking+class+barcelona" target="_blank" rel="noopener noreferrer">Find Cooking Classes</a></p>
+    </div>
+    <div class="info-card fade-in">
+      <h3>Segway Tour</h3>
+      <p><strong>Price:</strong> EUR 30-50 per person for 1.5-2 hours.</p>
+      <p><strong>From Htop BCN City:</strong> most start near the waterfront, ~5 km, 15 min taxi.</p>
+      <p><a href="https://www.google.com/maps/search/segway+tour+barcelona" target="_blank" rel="noopener noreferrer">Find Segway Tours</a></p>
+    </div>
+    <div class="info-card fade-in">
+      <h3>Wine &amp; Cava Tasting</h3>
+      <p><strong>Price:</strong> EUR 25-50 per person for a guided session with 4-6 tastings.</p>
+      <p><strong>From Htop BCN City:</strong> bars and cellars throughout the city, ~2-5 km.</p>
+      <p><a href="https://www.google.com/maps/search/wine+tasting+barcelona" target="_blank" rel="noopener noreferrer">Find Wine Tastings</a></p>
+    </div>
+    <div class="info-card fade-in">
+      <h3>Paddle Boarding</h3>
+      <p><strong>Price:</strong> EUR 15-30 per person for 1-hour rental.</p>
+      <p><strong>From Htop BCN City:</strong> ~5 km to Barceloneta, 15-20 min taxi.</p>
+      <p><a href="https://www.google.com/maps/search/paddle+boarding+barcelona" target="_blank" rel="noopener noreferrer">Find Paddle Board Rentals</a></p>
+    </div>
   </div>
   <p class="fade-in subtle-note">All prices are typical 2025-2026 ranges and can move with demand. For groups of 6, planning 1-2 weeks ahead usually gets better slots and bundle rates.</p>
+  <div id="approved-activity-suggestions" style="margin-top:20px;"></div>
 </section>
 
 <section id="suggestion-section" style="display:none;">
@@ -541,6 +584,16 @@
     <button onclick="suggestSiteChange()" class="btn btn-gold btn-sm">Submit Site Change</button>
     <p id="site-change-msg" style="margin-top:10px;"></p>
   </div>
+  <div class="info-card fade-in" style="margin-top:20px; text-align:center;">
+    <h3>Suggest an Activity</h3>
+    <p style="opacity:.7; margin-bottom:12px;">Know something fun to do in Barcelona? Submit it and the lads can vote.</p>
+    <input type="text" id="activity-suggest-title" placeholder="Activity name" class="form-input form-input-wide">
+    <textarea id="activity-suggest-details" rows="3" placeholder="What is it? Why should we do it?" class="form-input form-input-wide"></textarea>
+    <input type="text" id="activity-suggest-price" placeholder="Estimated price (e.g. EUR 25-40)" class="form-input form-input-mid">
+    <input type="url" id="activity-suggest-link" placeholder="Optional link (https://...)" class="form-input form-input-wide">
+    <button onclick="suggestActivity()" class="btn btn-gold btn-sm">Submit Activity</button>
+    <p id="activity-suggest-msg" style="margin-top:10px;"></p>
+  </div>
   <div id="approved-challenges" style="margin-top:20px;"></div>
   <div id="approved-site-change-suggestions" style="margin-top:20px;"></div>
 </section>
@@ -563,6 +616,8 @@
       <div id="pending-schedule-suggestions"></div>
       <h3 style="margin-top:18px;">Pending Site Change Suggestions</h3>
       <div id="pending-site-change-suggestions"></div>
+      <h3 style="margin-top:18px;">Pending Activity Suggestions</h3>
+      <div id="pending-activity-suggestions"></div>
     </div>
   </div>
 </section>

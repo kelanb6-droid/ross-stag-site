@@ -303,6 +303,10 @@
   let approvedScheduleSuggestions = loadJSON('approvedScheduleSuggestions', []);
   let pendingSiteChangeSuggestions = loadJSON('pendingSiteChangeSuggestions', []);
   let approvedSiteChangeSuggestions = loadJSON('approvedSiteChangeSuggestions', []);
+  let pendingActivitySuggestions = loadJSON('pendingActivitySuggestions', []);
+  let approvedActivitySuggestions = loadJSON('approvedActivitySuggestions', []);
+  let activitySubmissionLog = loadJSON('activitySubmissionLog', {});
+  let activityVoteLog = loadJSON('activityVoteLog', {});
   let shownChallengeIds = [];
   let completedChallengeIds = loadJSON('completedChallengeIds', []);
   let punishmentHistory = loadJSON('punishmentHistory', []);
@@ -392,6 +396,10 @@
     saveJSON('approvedScheduleSuggestions', approvedScheduleSuggestions);
     saveJSON('pendingSiteChangeSuggestions', pendingSiteChangeSuggestions);
     saveJSON('approvedSiteChangeSuggestions', approvedSiteChangeSuggestions);
+    saveJSON('pendingActivitySuggestions', pendingActivitySuggestions);
+    saveJSON('approvedActivitySuggestions', approvedActivitySuggestions);
+    saveJSON('activitySubmissionLog', activitySubmissionLog);
+    saveJSON('activityVoteLog', activityVoteLog);
     saveJSON('completedChallengeIds', completedChallengeIds);
     saveJSON('punishmentHistory', punishmentHistory);
     saveJSON('teamBattle', teamBattle);
@@ -491,22 +499,22 @@
 
   function spinPunishmentWheel() {
     const punishments = [
-      'Buy the next round.',
-      'Do 15 squats right now.',
-      'Finish your drink in one go.',
-      'Sing one full chorus chosen by the lads.',
-      'Give a 30-second speech about the groom.',
-      'Swap seats with the person opposite for 10 minutes.',
-      'Hand over your phone for one playlist song.',
-      'Order chips for the table.',
-      'Wear your shirt inside-out for the next round.',
-      'Post a selfie with a stranger to the group chat.',
-      'Do a lap of the bar on your knees.',
-      'Let the group send one text from your phone.',
-      'Speak only in Spanish for the next 10 minutes.',
-      'Serenade the groom with a love ballad.',
-      'Give a piggyback to the nearest lad.',
-      'Down a glass of water – hydration punishment.'
+      'Buy the next two rounds: one now, one later.',
+      'Do 30 bodyweight squats in under 90 seconds.',
+      'Finish your current drink, then hold a 60-second plank.',
+      'Deliver a 60-second wedding speech with no filler words.',
+      'You are the DJ for 3 songs and must dance through all of them.',
+      'Swap your top with the nearest lad for the next full venue.',
+      'Order chips or snacks for the full table immediately.',
+      'Keep one hand on your drink for 15 minutes or restart the timer.',
+      'Do a wall sit for 90 seconds while the lads count down.',
+      'Take a group selfie with 3 strangers photobombing in frame.',
+      'Speak only in dramatic commentator voice for 10 minutes.',
+      'Serenade the groom with a full chorus and eye contact.',
+      'Give piggyback transport to one lad for 40 metres.',
+      'No phone for 30 minutes. Another lad is your camera operator.',
+      'Learn and perform an 8-count dance move chosen by the group.',
+      'Down a full glass of water, then lead a loud team chant.'
     ];
     const chosen = punishments[Math.floor(Math.random() * punishments.length)];
     punishmentHistory.unshift(chosen);
@@ -892,6 +900,237 @@
           card.appendChild(linkP);
         }
 
+        container.appendChild(card);
+      });
+  }
+
+  function suggestActivity() {
+    const titleInput = document.getElementById('activity-suggest-title');
+    const detailsInput = document.getElementById('activity-suggest-details');
+    const priceInput = document.getElementById('activity-suggest-price');
+    const linkInput = document.getElementById('activity-suggest-link');
+    const msg = document.getElementById('activity-suggest-msg');
+    const crew = getCurrentCrewKey();
+
+    if (!crew) {
+      msg.textContent = 'Log in with your crew access code first.';
+      msg.style.color = '#C9382A';
+      return;
+    }
+    if (crew === groomBday) {
+      msg.textContent = 'Ross cannot submit suggestions.';
+      msg.style.color = '#C9382A';
+      return;
+    }
+
+    const title = sanitizeText(titleInput.value, 120);
+    const details = sanitizeText(detailsInput.value, 400);
+    const price = sanitizeText(priceInput.value, 80);
+    const link = normalizeURL(linkInput.value);
+
+    if (title.length < 3 || details.length < 6) {
+      msg.textContent = 'Add a title (3+ chars) and details (6+ chars).';
+      msg.style.color = '#C9382A';
+      return;
+    }
+
+    const normalized = normalizeTitle(title);
+    if (pendingActivitySuggestions.some(function (i) { return normalizeTitle(i.title) === normalized; }) ||
+        approvedActivitySuggestions.some(function (i) { return normalizeTitle(i.title) === normalized; })) {
+      msg.textContent = 'That activity suggestion already exists.';
+      msg.style.color = '#C9382A';
+      return;
+    }
+
+    const todayKey = getTodayKey();
+    var submissionKey = crew + ':' + todayKey;
+    var submissionsToday = activitySubmissionLog[submissionKey] || 0;
+    if (submissionsToday >= 6) {
+      msg.textContent = 'Daily limit reached (6 activity submissions).';
+      msg.style.color = '#C9382A';
+      return;
+    }
+
+    activitySubmissionLog[submissionKey] = submissionsToday + 1;
+    pendingActivitySuggestions.push({
+      id: Date.now().toString() + Math.random().toString(36).slice(2, 7),
+      title: title,
+      details: details,
+      price: price,
+      link: link,
+      suggestedBy: crew,
+      createdAt: Date.now(),
+      votes: 0
+    });
+    saveChallengeData();
+
+    msg.textContent = 'Activity submitted for Joshua to approve.';
+    msg.style.color = 'var(--gold)';
+    titleInput.value = '';
+    detailsInput.value = '';
+    priceInput.value = '';
+    linkInput.value = '';
+    displayPendingActivitySuggestions();
+  }
+
+  function displayPendingActivitySuggestions() {
+    var container = document.getElementById('pending-activity-suggestions');
+    if (!container) return;
+    clearElement(container);
+
+    if (!pendingActivitySuggestions.length) {
+      container.innerHTML = '<p style="opacity:.6;">No pending activity suggestions.</p>';
+      return;
+    }
+
+    pendingActivitySuggestions
+      .sort(function (a, b) { return b.createdAt - a.createdAt; })
+      .forEach(function (item) {
+        var div = makeCard();
+
+        var title = document.createElement('p');
+        var strong = document.createElement('strong');
+        strong.textContent = item.title;
+        title.appendChild(strong);
+        div.appendChild(title);
+
+        var meta = document.createElement('p');
+        meta.className = 'dynamic-card-meta';
+        meta.textContent = (item.price ? item.price + ' • ' : '') + 'by ' + getCrewDisplayName(item.suggestedBy);
+        div.appendChild(meta);
+
+        var details = document.createElement('p');
+        details.className = 'dynamic-card-text';
+        details.textContent = item.details;
+        div.appendChild(details);
+
+        if (item.link) {
+          var linkWrap = document.createElement('p');
+          var a = document.createElement('a');
+          a.href = item.link;
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+          a.textContent = 'Open link';
+          linkWrap.appendChild(a);
+          div.appendChild(linkWrap);
+        }
+
+        var actions = document.createElement('div');
+        actions.className = 'dynamic-card-actions';
+        actions.appendChild(makeActionButton('Approve', 'btn btn-approve btn-sm', function () { approveActivitySuggestion(item.id); }));
+        actions.appendChild(makeActionButton('Reject', 'btn btn-danger btn-sm', function () { rejectActivitySuggestion(item.id); }));
+        div.appendChild(actions);
+
+        container.appendChild(div);
+      });
+  }
+
+  function approveActivitySuggestion(id) {
+    var index = pendingActivitySuggestions.findIndex(function (i) { return i.id === id; });
+    if (index === -1) return;
+    var entry = pendingActivitySuggestions.splice(index, 1)[0];
+    approvedActivitySuggestions.push(entry);
+    saveChallengeData();
+    displayPendingActivitySuggestions();
+    displayApprovedActivitySuggestions();
+    showToast('Activity approved!', 2500);
+  }
+
+  function rejectActivitySuggestion(id) {
+    pendingActivitySuggestions = pendingActivitySuggestions.filter(function (i) { return i.id !== id; });
+    saveChallengeData();
+    displayPendingActivitySuggestions();
+  }
+
+  function voteActivity(id, delta) {
+    var crew = getCurrentCrewKey();
+    if (!crew) return;
+    var item = approvedActivitySuggestions.find(function (i) { return i.id === id; });
+    if (!item) return;
+    var voteKey = crew + ':' + id;
+    var previous = activityVoteLog[voteKey] || 0;
+    if (previous === delta) return;
+    item.votes = (item.votes || 0) + (delta - previous);
+    activityVoteLog[voteKey] = delta;
+    saveChallengeData();
+    displayApprovedActivitySuggestions();
+  }
+
+  function displayApprovedActivitySuggestions() {
+    var container = document.getElementById('approved-activity-suggestions');
+    if (!container) return;
+    clearElement(container);
+
+    if (!approvedActivitySuggestions.length) return;
+
+    var heading = document.createElement('h3');
+    heading.textContent = 'Crew-Suggested Activities';
+    heading.style.marginBottom = '10px';
+    container.appendChild(heading);
+
+    var crew = getCurrentCrewKey();
+
+    approvedActivitySuggestions
+      .slice()
+      .sort(function (a, b) { return (b.votes || 0) - (a.votes || 0); })
+      .forEach(function (item) {
+        var card = makeCard();
+        card.style.position = 'relative';
+
+        var title = document.createElement('p');
+        var strong = document.createElement('strong');
+        strong.textContent = item.title;
+        title.appendChild(strong);
+        card.appendChild(title);
+
+        var meta = document.createElement('p');
+        meta.className = 'dynamic-card-meta';
+        meta.textContent = (item.price ? item.price + ' • ' : '') + 'Suggested by ' + getCrewDisplayName(item.suggestedBy);
+        card.appendChild(meta);
+
+        var details = document.createElement('p');
+        details.className = 'dynamic-card-text';
+        details.textContent = item.details;
+        card.appendChild(details);
+
+        if (item.link) {
+          var linkP = document.createElement('p');
+          var a = document.createElement('a');
+          a.href = item.link;
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+          a.textContent = 'View link';
+          a.style.color = 'var(--gold)';
+          linkP.appendChild(a);
+          card.appendChild(linkP);
+        }
+
+        var voteRow = document.createElement('div');
+        voteRow.className = 'dynamic-card-actions';
+
+        var myVote = crew ? (activityVoteLog[crew + ':' + item.id] || 0) : 0;
+
+        var upBtn = makeActionButton(
+          myVote === 1 ? '👍 Upvoted' : '👍 Upvote',
+          myVote === 1 ? 'btn btn-gold btn-sm' : 'btn btn-outline-gold btn-sm',
+          function () { voteActivity(item.id, myVote === 1 ? 0 : 1); }
+        );
+        voteRow.appendChild(upBtn);
+
+        var downBtn = makeActionButton(
+          myVote === -1 ? '👎 Downvoted' : '👎 Downvote',
+          myVote === -1 ? 'btn btn-danger btn-sm' : 'btn btn-outline-light btn-sm',
+          function () { voteActivity(item.id, myVote === -1 ? 0 : -1); }
+        );
+        voteRow.appendChild(downBtn);
+
+        var scoreSpan = document.createElement('span');
+        scoreSpan.className = 'dynamic-card-score';
+        scoreSpan.textContent = (item.votes > 0 ? '+' : '') + (item.votes || 0) + ' votes';
+        scoreSpan.style.marginLeft = '8px';
+        voteRow.appendChild(scoreSpan);
+
+        card.appendChild(voteRow);
         container.appendChild(card);
       });
   }
@@ -1285,6 +1524,7 @@
       displayPendingChallenges();
       displayPendingScheduleSuggestions();
       displayPendingSiteChangeSuggestions();
+      displayPendingActivitySuggestions();
       document.body.classList.add('admin-mode');
       setTimeout(function () {
         var adminSec = document.getElementById('bestman-approval-section');
@@ -1297,6 +1537,7 @@
     if (loggedIn) displayApprovedChallenges();
     displayApprovedScheduleSuggestions();
     displayApprovedSiteChangeSuggestions();
+    displayApprovedActivitySuggestions();
   }
 
   function shakeLoginBox() {
@@ -1873,22 +2114,22 @@
 
   // Drinking Game
   const drinkingChallenges = [
-    "Take a shot for every lad who's been to Barcelona before.",
-    "Do 5 push-ups while singing the stag anthem.",
-    "Tell an embarrassing story about the groom.",
-    "Down your drink if you've ever lost your phone on a night out.",
-    "High-five everyone and say 'Vamos!'",
-    "Order a round for the table.",
-    "Dance like nobody's watching for 30 seconds.",
-    "Share your worst hangover story.",
-    "Swap drinks with the person on your left.",
-    "Everyone drinks while the groom tells a childhood secret.",
-    "Last person to touch their nose drinks.",
-    "Name three things the groom can't live without – wrong answers only.",
-    "Take a sip every time someone says 'Barcelona'.",
-    "Do your best impression of the groom – group votes, loser drinks.",
-    "Text someone 'I love you' and show the reply – or drink.",
-    "Everyone votes: who's most likely to get lost tonight? That person drinks."
+    "Power Hour opener: everyone takes one sip every minute for 10 minutes.",
+    "Take 10 push-ups, then finish with a loud 'VAMOS' before your next sip.",
+    "Tell the most chaotic groom story you know. Group scores it 1-10.",
+    "If you have ever missed a flight alarm, finish your drink and refill.",
+    "Choose a rival lad for a stare-down. Loser takes two sips.",
+    "Nominate one player for a mystery penalty sip every 5 minutes for 20 minutes.",
+    "Dance battle for 30 seconds. Crowd picks loser for a double sip.",
+    "Everyone points at who gets lost first tonight. Most votes takes two sips.",
+    "Accent round: speak only Spanish accent English for 5 minutes or drink.",
+    "Groom spotlight: everyone drinks while Ross tells one true and one fake story.",
+    "Last person to touch their shoe takes a full drink penalty.",
+    "Name 5 Barcelona landmarks in 15 seconds. Fail and drink.",
+    "No names challenge: first person to say a real name drinks.",
+    "Impression duel: best groom impression stays safe, loser drinks.",
+    "Phone roulette: show your last emoji-only text or take a drink.",
+    "Final whistle: everyone stands, toasts the groom, and takes one full sip together."
   ];
   function getDrinkingChallenge() {
     const random = drinkingChallenges[Math.floor(Math.random() * drinkingChallenges.length)];
@@ -1897,22 +2138,22 @@
 
   // Challenge Generator
   const fallbackChallenges = [
-    { title: "Run around the block in your underwear.", type: "Dares", difficulty: "Chaos", notes: "Old school classic." },
-    { title: "Sing a song chosen by the group at the top of your lungs.", type: "Dares", difficulty: "Medium", notes: "No backing track." },
-    { title: "Do 20 burpees in the hotel lobby.", type: "Team", difficulty: "Chaos", notes: "Fast reps only." },
-    { title: "Call a random contact and say 'I'm getting married!'.", type: "Dares", difficulty: "Medium", notes: "Speaker mode mandatory." },
-    { title: "Eat something spicy without drinking water.", type: "Drinking", difficulty: "Medium", notes: "No tap-out." },
-    { title: "Tell a joke that makes everyone laugh.", type: "Chill", difficulty: "Easy", notes: "Crowd decides." },
-    { title: "Switch clothes with someone for 10 minutes.", type: "Team", difficulty: "Easy", notes: "Full swap." },
-    { title: "Propose a toast to the groom.", type: "Chill", difficulty: "Easy", notes: "Keep it heartfelt." },
-    { title: "Get a stranger to take a group selfie with you.", type: "Dares", difficulty: "Easy", notes: "Bonus if they join a round." },
-    { title: "Carry the groom on your back for 30 metres.", type: "Team", difficulty: "Chaos", notes: "No dropping allowed." },
-    { title: "Recreate a famous movie scene on La Rambla.", type: "Dares", difficulty: "Medium", notes: "Group picks the film." },
-    { title: "Order food entirely in Spanish.", type: "Chill", difficulty: "Easy", notes: "Google translate counts." },
-    { title: "Do a conga line through the nearest bar.", type: "Team", difficulty: "Medium", notes: "Minimum 4 lads." },
-    { title: "Compose a freestyle rap about the groom.", type: "Dares", difficulty: "Medium", notes: "At least 8 bars." },
-    { title: "Dance battle: two lads, crowd picks the winner.", type: "Team", difficulty: "Chaos", notes: "Loser buys drinks." },
-    { title: "Hold a plank while the group finishes a pint.", type: "Team", difficulty: "Chaos", notes: "No knees allowed." }
+    { title: "Lead a one-minute bar chant and get 5 strangers to join in.", type: "Dares", difficulty: "Chaos", notes: "Volume and confidence decide success." },
+    { title: "Sing a full chorus chosen by the lads from memory only.", type: "Dares", difficulty: "Medium", notes: "No phone, no lyrics." },
+    { title: "Team relay: 25 squats each, no breaks between players.", type: "Team", difficulty: "Chaos", notes: "Clock starts when first rep drops." },
+    { title: "Call a contact and deliver a dramatic wedding invitation voice note.", type: "Dares", difficulty: "Medium", notes: "Group approves the performance." },
+    { title: "Spicy gauntlet: finish spicy snack, then recite the crew names backward.", type: "Drinking", difficulty: "Chaos", notes: "No water until finished." },
+    { title: "Rapid-fire joke round: make three lads laugh in 60 seconds.", type: "Chill", difficulty: "Easy", notes: "Fail means instant retry with accents." },
+    { title: "Wardrobe swap: trade one key clothing item for the next round.", type: "Team", difficulty: "Medium", notes: "Commit fully to the bit." },
+    { title: "Deliver a best-man style toast with one made-up memory and one real one.", type: "Chill", difficulty: "Easy", notes: "Crew guesses which is fake." },
+    { title: "Photo hunt: capture a group selfie with a birthday crew nearby.", type: "Dares", difficulty: "Medium", notes: "Ask politely and keep it friendly." },
+    { title: "Carry challenge: piggyback your teammate for 60 metres total.", type: "Team", difficulty: "Chaos", notes: "Switch halfway if needed." },
+    { title: "Recreate an iconic film scene in public with full commitment.", type: "Dares", difficulty: "Chaos", notes: "30-second performance minimum." },
+    { title: "Order a full round in Spanish with no English fallback.", type: "Chill", difficulty: "Medium", notes: "Accent points are bonus points." },
+    { title: "Start a conga line and keep it alive for 45 seconds.", type: "Team", difficulty: "Medium", notes: "Minimum 6 participants." },
+    { title: "Freestyle challenge: 8 bars about the groom, no repeated words.", type: "Dares", difficulty: "Chaos", notes: "Beatbox backing from the crew." },
+    { title: "Dance battle finals: winner safe, loser completes a forfeit.", type: "Team", difficulty: "Chaos", notes: "Crowd vote decides." },
+    { title: "Iron core: hold a plank while each lad gives one travel rule.", type: "Team", difficulty: "Chaos", notes: "Drop early and restart once." }
   ];
 
   function getFilteredApprovedChallenges(includeShown) {
