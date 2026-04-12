@@ -1044,7 +1044,11 @@
     Array.from(allowedCrewBdays)
       .filter(code => code !== bmBday)
       .sort()
-      .forEach(code => rows.push({ label: 'Crew Member', code: code, note: 'Crew access', removable: true }));
+      .forEach(code => {
+        var name = getCrewDisplayName(code);
+        var label = (name && name !== 'Crew') ? name : 'Crew Member';
+        rows.push({ label: label, code: code, note: 'Crew access', removable: true });
+      });
 
     rows.forEach(item => {
       const row = makeCard();
