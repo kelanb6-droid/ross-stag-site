@@ -11,7 +11,8 @@
   const obs = new IntersectionObserver(entries => { entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }); }, { threshold:.12 });
   document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
 
-  const navLinks = Array.from(document.querySelectorAll('.top-nav-link'));
+  const navGroups = Array.from(document.querySelectorAll('.nav-group'));
+  const navLinks = Array.from(document.querySelectorAll('.top-sub-link'));
   const navMap = navLinks
     .map(link => {
       const targetId = (link.getAttribute('href') || '').replace('#', '');
@@ -25,7 +26,44 @@
       const isActive = (link.getAttribute('href') || '') === '#' + id;
       link.classList.toggle('active', isActive);
     });
+    navGroups.forEach(group => {
+      const hasActive = !!group.querySelector('.top-sub-link.active');
+      group.classList.toggle('active', hasActive);
+    });
   }
+
+  function closeOpenMenus(exceptGroup) {
+    navGroups.forEach(group => {
+      if (group !== exceptGroup) {
+        group.classList.remove('open');
+        const toggle = group.querySelector('.nav-group-toggle');
+        if (toggle) toggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
+
+  navGroups.forEach(group => {
+    const toggle = group.querySelector('.nav-group-toggle');
+    if (!toggle) return;
+    toggle.addEventListener('click', function (event) {
+      event.preventDefault();
+      const willOpen = !group.classList.contains('open');
+      closeOpenMenus(group);
+      group.classList.toggle('open', willOpen);
+      toggle.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+    });
+  });
+
+  navLinks.forEach(link => {
+    link.addEventListener('click', function () {
+      closeOpenMenus(null);
+    });
+  });
+
+  document.addEventListener('click', function (event) {
+    const insideNav = event.target && event.target.closest && event.target.closest('.top-nav');
+    if (!insideNav) closeOpenMenus(null);
+  });
 
   if (navMap.length) {
     setActiveNavLink(navMap[0].section.id);
