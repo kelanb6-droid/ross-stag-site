@@ -1255,6 +1255,7 @@
       : 'Hello ' + getCrewDisplayName(bday) + '. Welcome, secret schedule unlocked.';
     msg.style.color = 'var(--gold)';
     updateCrewAccess();
+    showWelcomeGreeting(getCrewDisplayName(bday));
   }
 
   const crewLoginInput = document.getElementById('crew-login-bday');
@@ -1917,3 +1918,106 @@
     if (result) result.textContent = punishmentHistory[0];
     if (history) history.textContent = 'Recent: ' + punishmentHistory.join(' | ');
   }
+
+  // ── Scroll-to-top button ──
+  (function () {
+    var scrollBtn = document.getElementById('scroll-top-btn');
+    if (!scrollBtn) return;
+    var ticking = false;
+    window.addEventListener('scroll', function () {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () {
+        scrollBtn.classList.toggle('visible', window.scrollY > 600);
+        ticking = false;
+      });
+    }, { passive: true });
+  })();
+
+  // ── Toast notification system ──
+  function showToast(message, duration) {
+    var container = document.getElementById('toast-container');
+    if (!container) return;
+    var toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = message;
+    container.appendChild(toast);
+    setTimeout(function () {
+      toast.classList.add('toast-out');
+      setTimeout(function () { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 400);
+    }, duration || 3000);
+  }
+
+  // ── Welcome greeting bar ──
+  function showWelcomeGreeting(name) {
+    var existing = document.querySelector('.welcome-greeting');
+    if (existing) existing.parentNode.removeChild(existing);
+    var bar = document.createElement('div');
+    bar.className = 'welcome-greeting';
+    bar.textContent = 'Welcome aboard, ' + (name || 'Crew Member') + '! VAMOS BARCELONA \uD83C\uDDEA\uD83C\uDDF8';
+    document.body.appendChild(bar);
+    setTimeout(function () {
+      bar.classList.add('greeting-out');
+      setTimeout(function () { if (bar.parentNode) bar.parentNode.removeChild(bar); }, 500);
+    }, 3500);
+  }
+
+  // ── Confetti burst for RSVP ──
+  function celebrateRSVP() {
+    showToast('VAMOS! See you at BFS, 4am sharp!', 4000);
+    launchConfetti();
+  }
+
+  function launchConfetti() {
+    var canvas = document.getElementById('confetti-canvas');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    var pieces = [];
+    var colors = ['#D4A843', '#C9382A', '#F4A423', '#F5F0E8', '#FFD700', '#FF6347'];
+    for (var i = 0; i < 120; i++) {
+      pieces.push({
+        x: canvas.width * Math.random(),
+        y: canvas.height * Math.random() * 0.4 - canvas.height * 0.1,
+        w: 6 + Math.random() * 6,
+        h: 4 + Math.random() * 4,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        vx: (Math.random() - 0.5) * 6,
+        vy: 2 + Math.random() * 4,
+        rot: Math.random() * 360,
+        rv: (Math.random() - 0.5) * 12,
+        opacity: 1
+      });
+    }
+    var frame = 0;
+    var maxFrames = 120;
+    function draw() {
+      frame++;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (frame > maxFrames) { ctx.clearRect(0, 0, canvas.width, canvas.height); return; }
+      pieces.forEach(function (p) {
+        p.x += p.vx;
+        p.vy += 0.12;
+        p.y += p.vy;
+        p.rot += p.rv;
+        if (frame > maxFrames * 0.6) p.opacity = Math.max(0, p.opacity - 0.03);
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot * Math.PI / 180);
+        ctx.globalAlpha = p.opacity;
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        ctx.restore();
+      });
+      requestAnimationFrame(draw);
+    }
+    draw();
+  }
+
+  // ── Animate section titles on scroll ──
+  document.querySelectorAll('.section-title').forEach(function (el) {
+    if (!el.classList.contains('fade-in')) {
+      obs.observe(el);
+    }
+  });

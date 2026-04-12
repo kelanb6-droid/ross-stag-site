@@ -682,11 +682,24 @@
   <p style="opacity:.5; max-width:420px; margin:0 auto; line-height:1.7; font-size:14px;">
     3 nights. 6 lads. Zero hold bags. Maximum carnage. See you at Belfast International, 4am sharp.
   </p>
-  <a href="#" class="rsvp-btn" role="button" aria-label="Confirm attendance" onclick="alert('VAMOS! See you at BFS.'); return false;">I'M IN</a>
+  <a href="#" class="rsvp-btn" role="button" aria-label="Confirm attendance" onclick="celebrateRSVP(); return false;">I'M IN</a>
 </div>
 
 </main>
-<footer>Barcelona Stag 2026 &#183; Ross Wightman</footer>
+
+<button id="scroll-top-btn" type="button" aria-label="Scroll to top" title="Back to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">&uarr;</button>
+<div id="toast-container"></div>
+<canvas id="confetti-canvas"></canvas>
+
+<footer>
+  <div class="footer-inner">
+    <span class="footer-brand">Barcelona Stag 2026</span>
+    <span class="footer-separator">&#183;</span>
+    <span>Ross Wightman</span>
+    <span class="footer-separator">&#183;</span>
+    <a href="#" onclick="window.scrollTo({top:0,behavior:'smooth'}); return false;" class="footer-top-link">Back to Top &uarr;</a>
+  </div>
+</footer>
 
 <script src="rossstag.js"></script>
 </body>
