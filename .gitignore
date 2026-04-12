@@ -7,3 +7,7 @@
 !netlify.toml
 !netlify/
 !netlify/**
+!supabase_setup.sql
+
+# Local Netlify folder
+.netlify

@@ -325,6 +325,34 @@
     return '';
   }
 
+  function normalizeCrewNameKey(value) {
+    return String(value || '').toLowerCase().replace(/[^a-z]/g, '');
+  }
+
+  function resolveCrewCredential(value) {
+    const normalizedCode = normalizeCrewCode(value);
+    if (normalizedCode) return normalizedCode;
+
+    const nameKey = normalizeCrewNameKey(value);
+    if (!nameKey) return '';
+    const namePasswords = {
+      joshua: '160698',
+      joshuamoore: '160698',
+      josh: '160698',
+      emmanuel: '230997',
+      emmanuelpascual: '230997',
+      ross: '170997',
+      rosswightman: '170997',
+      kelan: '270298',
+      kelanboylan: '270298',
+      jack: '120398',
+      jackdoherty: '120398',
+      ciaran: '240598',
+      ciaranstone: '240598'
+    };
+    return namePasswords[nameKey] || '';
+  }
+
   function getCrewBday() {
     // Keep access state in-memory only to reduce persistence abuse.
     return crewBdayState;
@@ -361,8 +389,13 @@
   let challengeVoteLog = loadJSON('challengeVoteLog', {});
   let challengeReportLog = loadJSON('challengeReportLog', {});
   let challengeSubmissionLog = loadJSON('challengeSubmissionLog', {});
-  const challengeSyncEndpoint = '/.netlify/functions/challenge-state';
-  const netlifyChallengeSyncEnabled = typeof window !== 'undefined' && /^https?:$/i.test(window.location.protocol || '');
+  const supabaseUrl = 'https://ozfytroyziiihzzvzwky.supabase.co';
+  const supabaseAnonKey = 'sb_publishable_UQ4qHzfw9LV833yGydpPtQ_bsm9sXEh';
+  const supabaseChallengeStateTable = 'challenge_state';
+  const challengeCloudSyncEnabled = typeof window !== 'undefined'
+    && /^https?:$/i.test(window.location.protocol || '')
+    && !!supabaseUrl
+    && !!supabaseAnonKey;
   let challengeSyncInFlight = false;
   let challengeSyncQueued = false;
   let lastChallengeSyncHash = '';
@@ -444,6 +477,133 @@
     return new Date().toISOString().slice(0, 10);
   }
 
+  const MAX_SYNC_ITEMS = 400;
+  const MAX_SYNC_LOG_KEYS = 5000;
+
+  function clampNumber(value, min, max, fallback) {
+    const n = Number(value);
+    if (!Number.isFinite(n)) return fallback;
+    return Math.max(min, Math.min(max, n));
+  }
+
+  function sanitizeLogMap(value, numeric) {
+    const out = {};
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return out;
+    Object.entries(value).slice(0, MAX_SYNC_LOG_KEYS).forEach(function (entry) {
+      const key = sanitizeText(entry[0], 140);
+      if (!key) return;
+      out[key] = numeric ? clampNumber(entry[1], -999999, 999999, 0) : !!entry[1];
+    });
+    return out;
+  }
+
+  function sanitizeChallengeEntry(item) {
+    if (!item || typeof item !== 'object') return null;
+    const title = sanitizeText(item.title, 120);
+    if (title.length < 3) return null;
+    return {
+      id: sanitizeText(item.id, 64) || (Date.now().toString() + Math.random().toString(36).slice(2, 7)),
+      title: title,
+      type: sanitizeText(item.type, 24) || 'Chill',
+      difficulty: sanitizeText(item.difficulty, 24) || 'Easy',
+      notes: sanitizeText(item.notes, 300),
+      suggestedBy: sanitizeText(item.suggestedBy, 24) || 'Crew',
+      createdAt: clampNumber(item.createdAt, 0, 9999999999999, Date.now()),
+      votes: clampNumber(item.votes, -9999, 9999, 0),
+      reports: clampNumber(item.reports, 0, 9999, 0),
+      hidden: !!item.hidden
+    };
+  }
+
+  function sanitizeScheduleEntry(item) {
+    if (!item || typeof item !== 'object') return null;
+    const title = sanitizeText(item.title, 120);
+    const day = sanitizeText(item.day, 50);
+    const time = sanitizeText(item.time, 40);
+    const details = sanitizeText(item.details, 320);
+    if (title.length < 3 || day.length < 2 || time.length < 1 || details.length < 3) return null;
+    return {
+      id: sanitizeText(item.id, 64) || (Date.now().toString() + Math.random().toString(36).slice(2, 7)),
+      title: title,
+      day: day,
+      time: time,
+      details: details,
+      link: normalizeURL(item.link),
+      suggestedBy: sanitizeText(item.suggestedBy, 24) || 'Crew',
+      createdAt: clampNumber(item.createdAt, 0, 9999999999999, Date.now())
+    };
+  }
+
+  function sanitizeSiteChangeEntry(item) {
+    if (!item || typeof item !== 'object') return null;
+    const sectionName = sanitizeText(item.sectionName, 80) || 'Any Section';
+    const title = sanitizeText(item.title, 120);
+    const details = sanitizeText(item.details, 400);
+    if (title.length < 3 || details.length < 6) return null;
+    return {
+      id: sanitizeText(item.id, 64) || (Date.now().toString() + Math.random().toString(36).slice(2, 7)),
+      sectionName: sectionName,
+      title: title,
+      details: details,
+      link: normalizeURL(item.link),
+      suggestedBy: sanitizeText(item.suggestedBy, 24) || 'Crew',
+      createdAt: clampNumber(item.createdAt, 0, 9999999999999, Date.now())
+    };
+  }
+
+  function sanitizeActivityEntry(item) {
+    if (!item || typeof item !== 'object') return null;
+    const title = sanitizeText(item.title, 120);
+    const details = sanitizeText(item.details, 400);
+    if (title.length < 3 || details.length < 6) return null;
+    return {
+      id: sanitizeText(item.id, 64) || (Date.now().toString() + Math.random().toString(36).slice(2, 7)),
+      title: title,
+      details: details,
+      price: sanitizeText(item.price, 80),
+      link: normalizeURL(item.link),
+      suggestedBy: sanitizeText(item.suggestedBy, 24) || 'Crew',
+      createdAt: clampNumber(item.createdAt, 0, 9999999999999, Date.now()),
+      votes: clampNumber(item.votes, -9999, 9999, 0),
+      reports: clampNumber(item.reports, 0, 9999, 0),
+      hidden: !!item.hidden
+    };
+  }
+
+  function sanitizeList(list, sanitizer) {
+    if (!Array.isArray(list)) return [];
+    const out = [];
+    const seen = new Set();
+    list.forEach(function (item) {
+      const clean = sanitizer(item);
+      if (!clean || seen.has(clean.id)) return;
+      seen.add(clean.id);
+      out.push(clean);
+    });
+    return out.slice(0, MAX_SYNC_ITEMS);
+  }
+
+  function sanitizeCloudState(payload) {
+    const state = payload && typeof payload === 'object' ? payload : {};
+    return {
+      pendingChallenges: sanitizeList(state.pendingChallenges, sanitizeChallengeEntry),
+      approvedChallenges: sanitizeList(state.approvedChallenges, sanitizeChallengeEntry),
+      challengeVoteLog: sanitizeLogMap(state.challengeVoteLog, true),
+      challengeReportLog: sanitizeLogMap(state.challengeReportLog, false),
+      challengeSubmissionLog: sanitizeLogMap(state.challengeSubmissionLog, true),
+      scheduleSubmissionLog: sanitizeLogMap(state.scheduleSubmissionLog, true),
+      siteChangeSubmissionLog: sanitizeLogMap(state.siteChangeSubmissionLog, true),
+      pendingScheduleSuggestions: sanitizeList(state.pendingScheduleSuggestions, sanitizeScheduleEntry),
+      approvedScheduleSuggestions: sanitizeList(state.approvedScheduleSuggestions, sanitizeScheduleEntry),
+      pendingSiteChangeSuggestions: sanitizeList(state.pendingSiteChangeSuggestions, sanitizeSiteChangeEntry),
+      approvedSiteChangeSuggestions: sanitizeList(state.approvedSiteChangeSuggestions, sanitizeSiteChangeEntry),
+      pendingActivitySuggestions: sanitizeList(state.pendingActivitySuggestions, sanitizeActivityEntry),
+      approvedActivitySuggestions: sanitizeList(state.approvedActivitySuggestions, sanitizeActivityEntry),
+      activitySubmissionLog: sanitizeLogMap(state.activitySubmissionLog, true),
+      activityVoteLog: sanitizeLogMap(state.activityVoteLog, true)
+    };
+  }
+
   function getCurrentCrewKey() {
     return getCrewBday();
   }
@@ -479,13 +639,23 @@
   }
 
   function getChallengeStatePayload() {
-    return {
+    return sanitizeCloudState({
       pendingChallenges: pendingChallenges,
       approvedChallenges: approvedChallenges,
       challengeVoteLog: challengeVoteLog,
       challengeReportLog: challengeReportLog,
-      challengeSubmissionLog: challengeSubmissionLog
-    };
+      challengeSubmissionLog: challengeSubmissionLog,
+      scheduleSubmissionLog: scheduleSubmissionLog,
+      siteChangeSubmissionLog: siteChangeSubmissionLog,
+      pendingScheduleSuggestions: pendingScheduleSuggestions,
+      approvedScheduleSuggestions: approvedScheduleSuggestions,
+      pendingSiteChangeSuggestions: pendingSiteChangeSuggestions,
+      approvedSiteChangeSuggestions: approvedSiteChangeSuggestions,
+      pendingActivitySuggestions: pendingActivitySuggestions,
+      approvedActivitySuggestions: approvedActivitySuggestions,
+      activitySubmissionLog: activitySubmissionLog,
+      activityVoteLog: activityVoteLog
+    });
   }
 
   function hashChallengePayload(payload) {
@@ -497,16 +667,39 @@
   }
 
   function applyChallengeStatePayload(payload) {
-    if (!payload || typeof payload !== 'object') return;
-    if (Array.isArray(payload.pendingChallenges)) pendingChallenges = payload.pendingChallenges;
-    if (Array.isArray(payload.approvedChallenges)) approvedChallenges = payload.approvedChallenges;
-    if (payload.challengeVoteLog && typeof payload.challengeVoteLog === 'object') challengeVoteLog = payload.challengeVoteLog;
-    if (payload.challengeReportLog && typeof payload.challengeReportLog === 'object') challengeReportLog = payload.challengeReportLog;
-    if (payload.challengeSubmissionLog && typeof payload.challengeSubmissionLog === 'object') challengeSubmissionLog = payload.challengeSubmissionLog;
+    const safe = sanitizeCloudState(payload);
+    pendingChallenges = safe.pendingChallenges;
+    approvedChallenges = safe.approvedChallenges;
+    challengeVoteLog = safe.challengeVoteLog;
+    challengeReportLog = safe.challengeReportLog;
+    challengeSubmissionLog = safe.challengeSubmissionLog;
+    scheduleSubmissionLog = safe.scheduleSubmissionLog;
+    siteChangeSubmissionLog = safe.siteChangeSubmissionLog;
+    pendingScheduleSuggestions = safe.pendingScheduleSuggestions;
+    approvedScheduleSuggestions = safe.approvedScheduleSuggestions;
+    pendingSiteChangeSuggestions = safe.pendingSiteChangeSuggestions;
+    approvedSiteChangeSuggestions = safe.approvedSiteChangeSuggestions;
+    pendingActivitySuggestions = safe.pendingActivitySuggestions;
+    approvedActivitySuggestions = safe.approvedActivitySuggestions;
+    activitySubmissionLog = safe.activitySubmissionLog;
+    activityVoteLog = safe.activityVoteLog;
+  }
+
+  function getSupabaseChallengeEndpoint(query) {
+    const cleanBase = String(supabaseUrl || '').replace(/\/$/, '');
+    return cleanBase + '/rest/v1/' + supabaseChallengeStateTable + (query || '');
+  }
+
+  function getSupabaseHeaders() {
+    return {
+      apikey: supabaseAnonKey,
+      Authorization: 'Bearer ' + supabaseAnonKey,
+      'Content-Type': 'application/json'
+    };
   }
 
   function queueChallengeStateSync(force) {
-    if (!netlifyChallengeSyncEnabled) return;
+    if (!challengeCloudSyncEnabled) return;
     const payload = getChallengeStatePayload();
     const payloadHash = hashChallengePayload(payload);
     if (!force && payloadHash && payloadHash === lastChallengeSyncHash) return;
@@ -515,18 +708,20 @@
       return;
     }
     challengeSyncInFlight = true;
-    fetch(challengeSyncEndpoint, {
+    fetch(getSupabaseChallengeEndpoint(''), {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+      headers: Object.assign({}, getSupabaseHeaders(), {
+        Prefer: 'resolution=merge-duplicates,return=representation'
+      }),
+      body: JSON.stringify([{ id: 1, state: payload }])
     })
       .then(function (res) {
         if (!res.ok) throw new Error('Sync failed');
         return res.json();
       })
-      .then(function (body) {
-        if (!body || !body.ok || !body.state) return;
-        applyChallengeStatePayload(body.state);
+      .then(function (rows) {
+        if (!Array.isArray(rows) || !rows.length || !rows[0] || !rows[0].state) return;
+        applyChallengeStatePayload(rows[0].state);
         lastChallengeSyncHash = hashChallengePayload(getChallengeStatePayload());
       })
       .catch(function () {
@@ -541,22 +736,33 @@
   }
 
   async function loadChallengeStateFromCloud() {
-    if (!netlifyChallengeSyncEnabled) return false;
+    if (!challengeCloudSyncEnabled) return false;
     try {
-      const res = await fetch(challengeSyncEndpoint, {
+      const res = await fetch(getSupabaseChallengeEndpoint('?id=eq.1&select=state'), {
         method: 'GET',
+        headers: getSupabaseHeaders(),
         cache: 'no-store'
       });
       if (!res.ok) return false;
-      const body = await res.json();
-      if (!body || !body.ok || !body.state) return false;
-      applyChallengeStatePayload(body.state);
+      const rows = await res.json();
+      if (!Array.isArray(rows) || !rows.length || !rows[0] || !rows[0].state) return false;
+      applyChallengeStatePayload(rows[0].state);
       lastChallengeSyncHash = hashChallengePayload(getChallengeStatePayload());
       saveJSON('pendingChallenges', pendingChallenges);
       saveJSON('approvedChallenges', approvedChallenges);
       saveJSON('challengeVoteLog', challengeVoteLog);
       saveJSON('challengeReportLog', challengeReportLog);
       saveJSON('challengeSubmissionLog', challengeSubmissionLog);
+      saveJSON('scheduleSubmissionLog', scheduleSubmissionLog);
+      saveJSON('siteChangeSubmissionLog', siteChangeSubmissionLog);
+      saveJSON('pendingScheduleSuggestions', pendingScheduleSuggestions);
+      saveJSON('approvedScheduleSuggestions', approvedScheduleSuggestions);
+      saveJSON('pendingSiteChangeSuggestions', pendingSiteChangeSuggestions);
+      saveJSON('approvedSiteChangeSuggestions', approvedSiteChangeSuggestions);
+      saveJSON('pendingActivitySuggestions', pendingActivitySuggestions);
+      saveJSON('approvedActivitySuggestions', approvedActivitySuggestions);
+      saveJSON('activitySubmissionLog', activitySubmissionLog);
+      saveJSON('activityVoteLog', activityVoteLog);
       return true;
     } catch (e) {
       return false;
@@ -1717,22 +1923,49 @@
     }
   }
 
+  let loginFailCount = 0;
+  let loginLockedUntil = 0;
+
+  function registerLoginFailure() {
+    loginFailCount += 1;
+    if (loginFailCount < 3) return 0;
+    const cooldownMs = Math.min(30000, Math.pow(2, loginFailCount - 3) * 1000);
+    loginLockedUntil = Date.now() + cooldownMs;
+    return cooldownMs;
+  }
+
+  function clearLoginFailures() {
+    loginFailCount = 0;
+    loginLockedUntil = 0;
+  }
+
   function crewLogin() {
     const bdayField = document.getElementById('crew-login-bday');
-    const bday = normalizeCrewCode(bdayField.value);
+    const bday = resolveCrewCredential(bdayField.value);
     const msg = document.getElementById('crew-login-msg');
+    if (Date.now() < loginLockedUntil) {
+      const waitSec = Math.ceil((loginLockedUntil - Date.now()) / 1000);
+      msg.textContent = 'Too many attempts. Try again in ' + waitSec + ' seconds.';
+      msg.style.color = '#C9382A';
+      shakeLoginBox();
+      return;
+    }
     if (!bday) {
-      msg.textContent = 'Enter a valid access code (6 digits or DDMMYYYY).';
+      registerLoginFailure();
+      msg.textContent = 'Enter a valid crew password (name or DOB code).';
       msg.style.color = '#C9382A';
       shakeLoginBox();
       return;
     }
     if (!isAllowedCrewBday(bday)) {
+      const cooldown = registerLoginFailure();
       msg.textContent = 'Access code not recognized. Ask Joshua to add it.';
+      if (cooldown > 0) msg.textContent += ' Cooldown: ' + Math.ceil(cooldown / 1000) + 's.';
       msg.style.color = '#C9382A';
       shakeLoginBox();
       return;
     }
+    clearLoginFailures();
     setCrewBday(bday);
     bdayField.value = '';
     var isAdmin = bday === bmBday;
