@@ -243,7 +243,7 @@
   defaultCrewCodes.forEach(function (code) { allowedCrewBdays.add(code); });
   legacyCrewCodes.forEach(function (code) { allowedCrewBdays.add(code); });
   allowedCrewBdays.add(bmBday);
-  const crewNameByBday = {
+  const defaultCrewNameByBday = {
     '170997': 'Ross',
     '160698': 'Joshua',
     '230997': 'Emmanuel',
@@ -251,6 +251,7 @@
     '120398': 'Jack',
     '240598': 'Ciaran'
   };
+  const crewNameByBday = Object.assign({}, defaultCrewNameByBday);
   const crewMemberIdByBday = {
     '170997': 'ross',
     '160698': 'joshua',
@@ -307,6 +308,16 @@
     ciaranstone: '240598'
   };
   let crewAliasToCode = Object.assign({}, defaultCrewAliasToCode);
+  let crewNameOverrides = loadJSON('crewNameOverrides', {});
+  if (!crewNameOverrides || typeof crewNameOverrides !== 'object' || Array.isArray(crewNameOverrides)) {
+    crewNameOverrides = {};
+  }
+  Object.keys(crewNameOverrides).forEach(function (code) {
+    const normalizedCode = normalizeCrewCode(code);
+    const name = sanitizeText(crewNameOverrides[code], 40);
+    if (!normalizedCode || !name) return;
+    crewNameByBday[normalizedCode] = name;
+  });
   let crewPersonalizationOverrides = loadJSON('crewPersonalizationOverrides', {});
   if (!crewPersonalizationOverrides || typeof crewPersonalizationOverrides !== 'object' || Array.isArray(crewPersonalizationOverrides)) {
     crewPersonalizationOverrides = {};
@@ -316,6 +327,10 @@
   function getCrewDisplayName(bday) {
     const code = String(bday || '');
     return crewNameByBday[code] || 'Crew member';
+  }
+
+  function saveCrewNameOverrides() {
+    saveJSON('crewNameOverrides', crewNameByBday);
   }
 
   function supportsLocalStorage() {
@@ -2147,8 +2162,74 @@
         ));
       }
 
+      row.appendChild(makeActionButton(
+        'Edit Name',
+        'btn btn-outline-gold btn-sm',
+        function () { primeCrewNameEditor(item.code); }
+      ));
+
       container.appendChild(row);
     });
+  }
+
+  function primeCrewNameEditor(code) {
+    if (!requireAdminSession()) return;
+    const codeInput = document.getElementById('approval-name-code');
+    const nameInput = document.getElementById('approval-name-value');
+    const msg = document.getElementById('approval-name-msg');
+    if (!codeInput || !nameInput) return;
+    const normalized = normalizeCrewCode(code);
+    if (!normalized) return;
+    codeInput.value = normalized;
+    nameInput.value = getCrewDisplayName(normalized);
+    if (msg) {
+      msg.textContent = 'Editing name for ' + normalized + '.';
+      msg.style.color = 'var(--gold)';
+    }
+  }
+
+  function saveCrewNameByJoshua() {
+    if (!requireAdminSession()) return;
+    const codeInput = document.getElementById('approval-name-code');
+    const nameInput = document.getElementById('approval-name-value');
+    const msg = document.getElementById('approval-name-msg');
+    if (!codeInput || !nameInput || !msg) return;
+
+    const normalizedCode = normalizeCrewCode(codeInput.value);
+    const normalizedName = sanitizeText(nameInput.value, 40);
+
+    if (!normalizedCode) {
+      msg.textContent = 'Enter a valid crew code first.';
+      msg.style.color = '#C9382A';
+      return;
+    }
+    if (!normalizedName || normalizedName.length < 2) {
+      msg.textContent = 'Enter a display name with at least 2 characters.';
+      msg.style.color = '#C9382A';
+      return;
+    }
+    if (normalizedCode !== groomBday && !allowedCrewBdays.has(normalizedCode)) {
+      msg.textContent = 'Code must exist in the crew access list first.';
+      msg.style.color = '#C9382A';
+      return;
+    }
+
+    crewNameByBday[normalizedCode] = normalizedName;
+    saveCrewNameOverrides();
+    updateLadsPersonalization();
+    displayJoshuaApprovalList();
+    displayPendingChallenges();
+    displayPendingScheduleSuggestions();
+    displayPendingSiteChangeSuggestions();
+    displayPendingActivitySuggestions();
+    displayPublicPendingChallenges(!!getCrewBday());
+    displayApprovedChallenges();
+    displayApprovedScheduleSuggestions();
+    displayApprovedSiteChangeSuggestions();
+    displayApprovedActivitySuggestions();
+
+    msg.textContent = 'Saved name for ' + normalizedCode + ': ' + normalizedName;
+    msg.style.color = 'var(--gold)';
   }
 
   function addCrewCodeByJoshua() {

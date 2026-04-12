@@ -519,7 +519,13 @@
         <input type="text" id="approval-new-code" placeholder="Add code (6 digits or DDMMYYYY)" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:60%;">
         <button onclick="addCrewCodeByJoshua()" class="btn btn-gold btn-sm">Add Code</button>
       </div>
+      <div style="margin:8px 0 12px 0;">
+        <input type="text" id="approval-name-code" placeholder="Crew code for name" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:29%;">
+        <input type="text" id="approval-name-value" placeholder="Display name (e.g. Emmanuel)" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:29%;">
+        <button onclick="saveCrewNameByJoshua()" class="btn btn-gold btn-sm">Save Name</button>
+      </div>
       <p id="approval-code-msg" style="opacity:.75; margin-bottom:8px;"></p>
+      <p id="approval-name-msg" style="opacity:.75; margin-bottom:8px;"></p>
       <div id="joshua-approval-list"></div>
       <h3>Pending Challenges</h3>
       <div id="pending-challenges"></div>
