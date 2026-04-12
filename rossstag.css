@@ -8,6 +8,23 @@
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: 'Outfit', sans-serif; background: var(--black); color: var(--cream); overflow-x: hidden; scroll-behavior: smooth; scroll-padding-top: 110px; }
+  .skip-link {
+    position: fixed;
+    left: 12px;
+    top: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: var(--gold);
+    color: var(--black);
+    font-weight: 700;
+    text-decoration: none;
+    transform: translateY(-120%);
+    transition: transform .2s ease;
+    z-index: 11000;
+  }
+  .skip-link:focus-visible {
+    transform: translateY(0);
+  }
 
   .top-nav {
     position: fixed;
@@ -136,6 +153,33 @@
     opacity: .3;
   }
   .hero-content { position: relative; z-index: 1; }
+  .hero-controls {
+    position: fixed;
+    top: 90px;
+    right: 20px;
+    z-index: 10001;
+    display: flex;
+    gap: 10px;
+  }
+  .icon-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 999px;
+    border: 1px solid rgba(212,168,67,.55);
+    background: linear-gradient(135deg, var(--gold), var(--sun));
+    color: var(--black);
+    font-size: 20px;
+    box-shadow: 0 8px 24px rgba(212,168,67,.28);
+  }
+  .icon-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(212,168,67,.35);
+  }
+  .icon-btn-secondary {
+    width: 48px;
+    height: 48px;
+    font-size: 17px;
+  }
   .hero-emoji { font-size: 56px; margin-bottom: -6px; animation: fadeDown .8s ease-out; filter: drop-shadow(0 0 30px rgba(212,168,67,.3)); }
   .hero h1 { font-family:'Bebas Neue',sans-serif; font-size:clamp(64px,16vw,180px); letter-spacing:10px; color:var(--gold); line-height:.85; animation:fadeUp .8s ease-out; text-shadow:0 0 60px rgba(212,168,67,.2); }
   .hero h2 { font-family:'Bebas Neue',sans-serif; font-size:clamp(16px,3.5vw,28px); letter-spacing:12px; color:var(--cream); opacity:.6; margin-top:8px; animation:fadeUp .8s .2s ease-out both; }
@@ -153,10 +197,14 @@
   section { max-width:900px; margin:0 auto; padding:90px 24px; }
   .section-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(32px,7vw,56px); color:var(--gold); letter-spacing:5px; margin-bottom:36px; position:relative; }
   .section-title::after { content:''; display:block; width:45px; height:2px; background:var(--accent); margin-top:10px; }
+  .lads-subtitle { margin-top:-18px; margin-bottom:20px; font-size:12px; letter-spacing:1px; opacity:.62; }
 
   .lads-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:16px; }
   .lad-card { background:var(--dark); border:1px solid rgba(212,168,67,.1); padding:24px 16px; border-radius:10px; text-align:center; transition:all .3s ease; box-shadow:0 4px 16px rgba(0,0,0,.3); }
   .lad-card:hover { border-color:var(--gold); transform:translateY(-6px); box-shadow:0 12px 28px rgba(212,168,67,.2); }
+  .lad-card.current-user { border-color:var(--gold); box-shadow:0 12px 30px rgba(212,168,67,.35); transform:translateY(-4px); }
+  .lad-card.current-user .lad-avatar { box-shadow:0 0 0 4px rgba(212,168,67,.25); }
+  .lad-card.current-user .lad-role { opacity:.92; color:var(--gold); }
   .lad-avatar { width:52px; height:52px; border-radius:50%; background:linear-gradient(135deg,var(--gold),var(--sun)); display:flex; align-items:center; justify-content:center; margin:0 auto 12px; font-family:'Bebas Neue',sans-serif; font-size:20px; color:var(--black); }
   .lad-name { font-weight:600; font-size:14px; }
   .lad-role { font-size:11px; opacity:.4; letter-spacing:2px; text-transform:uppercase; margin-top:4px; }
@@ -270,6 +318,40 @@
     border: none;
     letter-spacing: 0.5px;
   }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    font-weight: 700;
+  }
+  .btn-sm {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+  .btn-gold {
+    background: linear-gradient(135deg, var(--gold), var(--sun));
+    color: var(--black);
+    box-shadow: 0 4px 16px rgba(212,168,67,.25);
+  }
+  .btn-gold:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(212,168,67,.4);
+  }
+  .btn-outline-gold {
+    background: transparent;
+    color: var(--gold);
+    border-color: rgba(212,168,67,.45);
+  }
+  .btn-outline-light {
+    background: transparent;
+    color: var(--cream);
+    border-color: rgba(255,255,255,.3);
+  }
+  .ml-6 { margin-left: 6px; }
+  .mr-6 { margin-right: 6px; }
   button:active {
     transform: scale(0.98);
   }
@@ -291,6 +373,10 @@
   @keyframes bounce { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(8px)} }
   .fade-in { opacity:0; transform:translateY(20px); transition:opacity .6s ease, transform .6s ease; }
   .fade-in.visible { opacity:1; transform:translateY(0); }
+  :focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 3px;
+  }
 
   /* Light Theme */
   .light-theme {
@@ -317,6 +403,10 @@
   }
   .light-theme .lad-card:hover { 
     box-shadow: 0 12px 28px rgba(0,0,0,.15);
+  }
+  .light-theme .lad-card.current-user {
+    border-color: rgba(212,168,67,.8);
+    box-shadow: 0 12px 26px rgba(212,168,67,.25);
   }
   .light-theme .flight-card { 
     background: var(--dark);
@@ -597,5 +687,17 @@
     .top-nav-brand { font-size: 16px; margin-right: 2px; }
     .nav-group-toggle { padding: 8px 10px; font-size: 11px; }
     .nav-group-menu { position: fixed; left: 8px; right: 8px; min-width: 0; top: 68px; }
+    .hero-controls { top: 78px; right: 12px; }
+    .icon-btn { width: 46px; height: 46px; font-size: 18px; }
+    .icon-btn-secondary { width: 44px; height: 44px; font-size: 15px; }
     section { padding: 72px 20px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }

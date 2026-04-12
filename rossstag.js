@@ -134,6 +134,38 @@
     '120398': 'Jack',
     '240598': 'Ciaran'
   };
+  const crewPersonalizationByBday = {
+    '170997': {
+      title: 'Groom Mode: Ross In The Building',
+      subtitle: 'All eyes on the groom. Keep him fed, watered, and on schedule.',
+      role: 'The Main Character'
+    },
+    '180997': {
+      title: 'Best Man Console: Joshua Online',
+      subtitle: 'Command center is unlocked. Approvals and chaos management are yours.',
+      role: 'Best Man Controller'
+    },
+    '230997': {
+      title: 'Emmanuel Is In',
+      subtitle: 'Energy deployed. Keep the pace high and the stories better.',
+      role: 'Vibes Captain'
+    },
+    '270298': {
+      title: 'Kelan Has Joined The Crew',
+      subtitle: 'Challenge engine activated. Keep the lads moving.',
+      role: 'Challenge Specialist'
+    },
+    '120398': {
+      title: 'Jack Has Checked In',
+      subtitle: 'Route planner status: active. Keep everyone where they need to be.',
+      role: 'Logistics Lad'
+    },
+    '240598': {
+      title: 'Ciaran Has Entered Crew Mode',
+      subtitle: 'Morale and momentum are now your responsibility.',
+      role: 'Momentum Manager'
+    }
+  };
   let crewBdayState = '';
 
   function getCrewDisplayName(bday) {
@@ -1046,6 +1078,42 @@
     updateCrewAccess();
   }
 
+  function updateLadsPersonalization() {
+    const titleEl = document.getElementById('lads-title');
+    const subtitleEl = document.getElementById('lads-subtitle');
+    const cards = Array.from(document.querySelectorAll('.lad-card[data-code]'));
+    const activeCode = getCrewBday();
+
+    cards.forEach(function (card) {
+      card.classList.remove('current-user');
+      const roleEl = card.querySelector('.lad-role');
+      const defaultRole = card.getAttribute('data-default-role') || '';
+      if (roleEl && defaultRole) roleEl.textContent = defaultRole;
+    });
+
+    if (!activeCode) {
+      if (titleEl) titleEl.textContent = 'The Lads';
+      if (subtitleEl) subtitleEl.textContent = 'Crew roll call is locked until login.';
+      return;
+    }
+
+    const profile = crewPersonalizationByBday[activeCode] || {
+      title: 'Welcome Back, ' + getCrewDisplayName(activeCode),
+      subtitle: 'Crew mode is active. Keep the lads moving.',
+      role: 'Crew Member'
+    };
+
+    if (titleEl) titleEl.textContent = profile.title;
+    if (subtitleEl) subtitleEl.textContent = profile.subtitle;
+
+    const activeCard = document.querySelector('.lad-card[data-code="' + activeCode + '"]');
+    if (!activeCard) return;
+
+    activeCard.classList.add('current-user');
+    const roleEl = activeCard.querySelector('.lad-role');
+    if (roleEl && profile.role) roleEl.textContent = profile.role;
+  }
+
   function updateCrewAccess() {
     let crewBday = getCrewBday();
     const suggestionSection = document.getElementById('suggestion-section');
@@ -1068,6 +1136,7 @@
     if (loginOverlay) loginOverlay.style.display = loggedIn ? 'none' : 'flex';
     if (logoutButton) logoutButton.style.display = loggedIn ? 'block' : 'none';
     document.body.classList.toggle('overlay-active', !loggedIn);
+    updateLadsPersonalization();
     if (isAdmin) {
       document.getElementById('approval-panel').style.display = 'block';
       displayJoshuaApprovalList();

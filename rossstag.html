@@ -5,19 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data:; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' https: data:; font-src 'self' https: data:; connect-src 'self' https:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self';">
 <meta name="description" content="Ross Wightman's Stag Do in Barcelona, May 2026. 3 nights, 6 lads, maximum fun!">
+<meta name="theme-color" content="#0A0A0A">
 <title>BARCELONA STAG - May 2026</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>ðŸ‡ªðŸ‡¸</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x1F1EA;&#x1F1F8;</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="rossstag.css">
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to content</a>
 
-<div id="login-overlay">
+<div id="login-overlay" role="dialog" aria-modal="true" aria-labelledby="crew-login-title">
   <div class="login-box">
-    <h2>Crew Login</h2>
+    <h2 id="crew-login-title">Crew Login</h2>
     <p>Enter your crew access code to unlock the lads-only schedule and ideas board.</p>
-    <input type="password" id="crew-login-bday" placeholder="6-digit code">
-    <button onclick="crewLogin()">Unlock</button>
+    <input type="password" id="crew-login-bday" placeholder="6-digit code" inputmode="numeric" autocomplete="one-time-code" aria-label="Crew access code">
+    <button type="button" onclick="crewLogin()">Unlock</button>
     <p id="crew-login-msg" style="margin-top:14px; opacity:.85;"></p>
   </div>
 </div>
@@ -26,7 +28,7 @@
   <div class="top-nav-inner">
     <span class="top-nav-brand">Stag HQ</span>
     <div class="nav-group">
-      <button class="nav-group-toggle" type="button" aria-expanded="false">Trip <span class="nav-caret">▾</span></button>
+      <button class="nav-group-toggle" type="button" aria-expanded="false" aria-haspopup="true">Trip <span class="nav-caret">▾</span></button>
       <div class="nav-group-menu">
         <a class="top-sub-link" href="#trip-schedule-section">Crew</a>
         <a class="top-sub-link" href="#flights-section">Flights</a>
@@ -36,7 +38,7 @@
       </div>
     </div>
     <div class="nav-group">
-      <button class="nav-group-toggle" type="button" aria-expanded="false">City <span class="nav-caret">▾</span></button>
+      <button class="nav-group-toggle" type="button" aria-expanded="false" aria-haspopup="true">City <span class="nav-caret">▾</span></button>
       <div class="nav-group-menu">
         <a class="top-sub-link" href="#nightlife-section">Nightlife</a>
         <a class="top-sub-link" href="#restaurants-section">Food</a>
@@ -45,7 +47,7 @@
       </div>
     </div>
     <div class="nav-group">
-      <button class="nav-group-toggle" type="button" aria-expanded="false">Games <span class="nav-caret">▾</span></button>
+      <button class="nav-group-toggle" type="button" aria-expanded="false" aria-haspopup="true">Games <span class="nav-caret">▾</span></button>
       <div class="nav-group-menu">
         <a class="top-sub-link" href="#challenge-generator-section">Challenges</a>
         <a class="top-sub-link" href="#team-battle-section">Team Battle</a>
@@ -54,7 +56,7 @@
       </div>
     </div>
     <div class="nav-group">
-      <button class="nav-group-toggle" type="button" aria-expanded="false">Admin <span class="nav-caret">▾</span></button>
+      <button class="nav-group-toggle" type="button" aria-expanded="false" aria-haspopup="true">Admin <span class="nav-caret">▾</span></button>
       <div class="nav-group-menu">
         <a class="top-sub-link" href="#suggestion-section">Suggestions</a>
         <a class="top-sub-link" href="#expenses-section">Expenses</a>
@@ -66,8 +68,10 @@
 
 <div class="hero">
   <div class="hero-content">
-    <button id="theme-toggle" onclick="toggleTheme()" style="position:absolute; top:90px; right:20px; padding:10px; background:var(--gold); color:var(--black); border:none; cursor:pointer; border-radius:50%; width:50px; height:50px; font-size:20px;">ðŸŒ™</button>
-    <button id="crew-logout-btn" onclick="crewLogout()" style="position:fixed; top:90px; right:90px; padding:10px; background:var(--gold); color:var(--black); border:none; cursor:pointer; border-radius:50%; width:48px; height:48px; font-size:18px; display:none; z-index:10001;">â</button>
+    <div class="hero-controls">
+      <button id="theme-toggle" class="icon-btn" type="button" onclick="toggleTheme()" aria-label="Switch to light theme" title="Switch theme">&#x1F319;</button>
+      <button id="crew-logout-btn" class="icon-btn icon-btn-secondary" type="button" onclick="crewLogout()" aria-label="Log out" title="Log out" style="display:none;">&#x23CF;</button>
+    </div>
     <div class="hero-emoji">&#127466;&#127480;</div>
     <h1>BARCELONA</h1>
     <h2>Ross's Stag Do</h2>
@@ -78,6 +82,7 @@
   <div class="scroll-hint">Scroll Down</div>
 </div>
 
+<main id="main-content">
 <div class="countdown fade-in">
   <div class="countdown-label">Countdown to Takeoff</div>
   <div class="countdown-grid">
@@ -328,55 +333,55 @@
   <h2 class="section-title fade-in">Restaurant Picks</h2>
   <div class="restaurant-grid">
     <div class="restaurant-card fade-in">
-      <img src="https://images.unsplash.com/photo-1515443961218-a51367888e4b?auto=format&fit=crop&w=900&q=80" alt="Tapas dishes at a Barcelona restaurant">
+      <img src="https://images.unsplash.com/photo-1515443961218-a51367888e4b?auto=format&fit=crop&w=900&q=80" alt="Tapas dishes at a Barcelona restaurant" loading="lazy" decoding="async">
       <div class="restaurant-body">
         <h3>El Nacional</h3>
-        <div class="restaurant-meta">Eixample â€¢ Tapas â€¢ Group Friendly</div>
+        <div class="restaurant-meta">Eixample &bull; Tapas &bull; Group Friendly</div>
         <p>Big venue with multiple kitchens and bars, ideal for a stag group that wants variety in one stop.</p>
         <a class="restaurant-link" href="https://maps.google.com/?q=El+Nacional+Barcelona" target="_blank" rel="noopener noreferrer">Open in Maps</a>
       </div>
     </div>
     <div class="restaurant-card fade-in">
-      <img src="https://images.unsplash.com/photo-1544148103-0773bf10d330?auto=format&fit=crop&w=900&q=80" alt="Seafood paella on a table">
+      <img src="https://images.unsplash.com/photo-1544148103-0773bf10d330?auto=format&fit=crop&w=900&q=80" alt="Seafood paella on a table" loading="lazy" decoding="async">
       <div class="restaurant-body">
         <h3>Can Sole</h3>
-        <div class="restaurant-meta">Barceloneta â€¢ Seafood â€¢ Classic</div>
+        <div class="restaurant-meta">Barceloneta &bull; Seafood &bull; Classic</div>
         <p>Traditional seafood and rice dishes near the water, great for a proper sit-down crew dinner.</p>
         <a class="restaurant-link" href="https://maps.google.com/?q=Can+Sole+Barcelona" target="_blank" rel="noopener noreferrer">Open in Maps</a>
       </div>
     </div>
     <div class="restaurant-card fade-in">
-      <img src="https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?auto=format&fit=crop&w=900&q=80" alt="Grilled steak and sides served on a table">
+      <img src="https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?auto=format&fit=crop&w=900&q=80" alt="Grilled steak and sides served on a table" loading="lazy" decoding="async">
       <div class="restaurant-body">
         <h3>Besta</h3>
-        <div class="restaurant-meta">Eixample â€¢ Grill â€¢ Date Night Vibe</div>
+        <div class="restaurant-meta">Eixample &bull; Grill &bull; Date Night Vibe</div>
         <p>Modern Spanish-Galician menu with serious grill options and a stylish room for a big night out.</p>
         <a class="restaurant-link" href="https://maps.google.com/?q=Besta+Barcelona" target="_blank" rel="noopener noreferrer">Open in Maps</a>
       </div>
     </div>
     <div class="restaurant-card fade-in">
-      <img src="https://images.unsplash.com/photo-1473093226795-af9932fe5856?auto=format&fit=crop&w=900&q=80" alt="Pasta dish and wine on a rustic table">
+      <img src="https://images.unsplash.com/photo-1473093226795-af9932fe5856?auto=format&fit=crop&w=900&q=80" alt="Pasta dish and wine on a rustic table" loading="lazy" decoding="async">
       <div class="restaurant-body">
         <h3>Parking Pizza</h3>
-        <div class="restaurant-meta">Multiple Spots â€¢ Pizza â€¢ Casual</div>
+        <div class="restaurant-meta">Multiple Spots &bull; Pizza &bull; Casual</div>
         <p>Fast, crowd-pleasing wood-fired pizza for easy nights when the plan is eat quickly then hit the bars.</p>
         <a class="restaurant-link" href="https://maps.google.com/?q=Parking+Pizza+Barcelona" target="_blank" rel="noopener noreferrer">Open in Maps</a>
       </div>
     </div>
     <div class="restaurant-card fade-in">
-      <img src="https://images.unsplash.com/photo-1484723091739-30a097e8f929?auto=format&fit=crop&w=900&q=80" alt="Brunch plates and coffee arranged on a table">
+      <img src="https://images.unsplash.com/photo-1484723091739-30a097e8f929?auto=format&fit=crop&w=900&q=80" alt="Brunch plates and coffee arranged on a table" loading="lazy" decoding="async">
       <div class="restaurant-body">
         <h3>Brunch & Cake</h3>
-        <div class="restaurant-meta">Eixample â€¢ Brunch â€¢ Recovery Stop</div>
+        <div class="restaurant-meta">Eixample &bull; Brunch &bull; Recovery Stop</div>
         <p>Top-tier brunch and coffee for the morning after, with big portions and easy group seating.</p>
         <a class="restaurant-link" href="https://maps.google.com/?q=Brunch+and+Cake+Barcelona" target="_blank" rel="noopener noreferrer">Open in Maps</a>
       </div>
     </div>
     <div class="restaurant-card fade-in">
-      <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=900&q=80" alt="Assorted tapas on a bar counter">
+      <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=900&q=80" alt="Assorted tapas on a bar counter" loading="lazy" decoding="async">
       <div class="restaurant-body">
         <h3>Cerveceria Catalana</h3>
-        <div class="restaurant-meta">Eixample â€¢ Tapas â€¢ Lively</div>
+        <div class="restaurant-meta">Eixample &bull; Tapas &bull; Lively</div>
         <p>One of the safest crowd favorites in the city, with a huge menu and fast service for groups.</p>
         <a class="restaurant-link" href="https://maps.google.com/?q=Cerveceria+Catalana+Barcelona" target="_blank" rel="noopener noreferrer">Open in Maps</a>
       </div>
@@ -476,7 +481,7 @@
       <option value="Chaos">Chaos</option>
     </select>
     <textarea id="challenge-notes" rows="3" placeholder="Optional details..." style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:60%;"></textarea>
-    <button onclick="suggestChallenge()" style="padding:8px 16px; background:var(--gold); color:var(--black); border:none; cursor:pointer; border-radius:2px;">Submit Challenge</button>
+    <button onclick="suggestChallenge()" class="btn btn-gold btn-sm">Submit Challenge</button>
     <p id="challenge-msg" style="margin-top:10px;"></p>
   </div>
   <div class="info-card fade-in" style="margin-top:20px; text-align:center;">
@@ -487,7 +492,7 @@
     <input type="text" id="schedule-time" placeholder="Time (e.g. 15:30)" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:29%;">
     <textarea id="schedule-details" rows="3" placeholder="Details..." style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:60%;"></textarea>
     <input type="url" id="schedule-link" placeholder="Optional link (https://...)" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:60%;">
-    <button onclick="suggestScheduleItem()" style="padding:8px 16px; background:var(--gold); color:var(--black); border:none; cursor:pointer; border-radius:2px;">Submit Schedule Item</button>
+    <button onclick="suggestScheduleItem()" class="btn btn-gold btn-sm">Submit Schedule Item</button>
     <p id="schedule-suggestion-msg" style="margin-top:10px;"></p>
   </div>
   <div class="info-card fade-in" style="margin-top:20px; text-align:center;">
@@ -497,7 +502,7 @@
     <input type="text" id="site-change-title" placeholder="Change title" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:60%;">
     <textarea id="site-change-details" rows="3" placeholder="Describe the change..." style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:60%;"></textarea>
     <input type="url" id="site-change-link" placeholder="Optional link (https://...)" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:60%;">
-    <button onclick="suggestSiteChange()" style="padding:8px 16px; background:var(--gold); color:var(--black); border:none; cursor:pointer; border-radius:2px;">Submit Site Change</button>
+    <button onclick="suggestSiteChange()" class="btn btn-gold btn-sm">Submit Site Change</button>
     <p id="site-change-msg" style="margin-top:10px;"></p>
   </div>
   <div id="approved-challenges" style="margin-top:20px;"></div>
@@ -507,12 +512,12 @@
 <section id="bestman-approval-section" style="display:none;">
   <h2 class="section-title fade-in">Best Man Approval</h2>
   <div class="info-card fade-in" style="text-align:center;">
-    <button onclick="accessApproval()" style="padding:8px 16px; background:var(--gold); color:var(--black); border:none; cursor:pointer; border-radius:2px;">Access</button>
+    <button onclick="accessApproval()" class="btn btn-gold btn-sm">Access</button>
     <div id="approval-panel" style="display:none; margin-top:20px;">
       <h3>Joshua Crew Access List</h3>
       <div style="margin:8px 0 12px 0;">
         <input type="text" id="approval-new-code" placeholder="Add code (6 digits or DDMMYYYY)" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:60%;">
-        <button onclick="addCrewCodeByJoshua()" style="padding:8px 14px; background:var(--gold); color:var(--black); border:none; cursor:pointer; border-radius:2px;">Add Code</button>
+        <button onclick="addCrewCodeByJoshua()" class="btn btn-gold btn-sm">Add Code</button>
       </div>
       <p id="approval-code-msg" style="opacity:.75; margin-bottom:8px;"></p>
       <div id="joshua-approval-list"></div>
@@ -530,7 +535,7 @@
   <h2 class="section-title fade-in">Stag Do Drinking Game</h2>
   <div class="info-card fade-in" style="text-align:center;">
     <p>Click for a random drinking challenge!</p>
-    <button onclick="getDrinkingChallenge()" style="padding:10px 20px; background:var(--gold); color:var(--black); border:none; cursor:pointer; border-radius:2px;">Get Challenge</button>
+    <button onclick="getDrinkingChallenge()" class="btn btn-gold">Get Challenge</button>
     <p id="drinking-challenge" style="margin-top:10px; font-weight:bold;"></p>
   </div>
 </section>
@@ -552,9 +557,9 @@
       <option value="Medium">Medium</option>
       <option value="Chaos">Chaos</option>
     </select>
-    <button onclick="getChallenge()" style="padding:10px 20px; background:var(--gold); color:var(--black); border:none; cursor:pointer; border-radius:2px;">Generate Challenge</button>
-    <button onclick="skipChallenge()" style="padding:10px 20px; background:transparent; color:var(--gold); border:1px solid rgba(212,168,67,.45); cursor:pointer; border-radius:2px; margin-left:6px;">Skip</button>
-    <button onclick="markChallengeComplete()" style="padding:10px 20px; background:transparent; color:var(--cream); border:1px solid rgba(255,255,255,.3); cursor:pointer; border-radius:2px; margin-left:6px;">Mark Completed</button>
+    <button onclick="getChallenge()" class="btn btn-gold">Generate Challenge</button>
+    <button onclick="skipChallenge()" class="btn btn-outline-gold ml-6">Skip</button>
+    <button onclick="markChallengeComplete()" class="btn btn-outline-light ml-6">Mark Completed</button>
     <p id="random-challenge" style="margin-top:10px; font-weight:bold;"></p>
     <p id="random-challenge-meta" style="margin-top:6px; opacity:.6;"></p>
     <p id="challenge-complete-msg" style="margin-top:6px; opacity:.7;"></p>
@@ -567,13 +572,13 @@
     <p style="opacity:.7; margin-bottom:10px;">Set team names, assign current challenge, and track score.</p>
     <input type="text" id="team-a-name" placeholder="Team A name" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px;">
     <input type="text" id="team-b-name" placeholder="Team B name" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px;">
-    <button onclick="saveTeamNames()" style="padding:8px 14px; background:var(--gold); color:var(--black); border:none; cursor:pointer; border-radius:2px;">Save Teams</button>
+    <button onclick="saveTeamNames()" class="btn btn-gold btn-sm">Save Teams</button>
     <p id="team-scoreboard" style="margin-top:12px; font-weight:600;"></p>
-    <button onclick="addTeamPoint('A')" style="padding:8px 14px; background:var(--gold); color:var(--black); border:none; cursor:pointer; border-radius:2px; margin-right:6px;">+1 Team A</button>
-    <button onclick="addTeamPoint('B')" style="padding:8px 14px; background:var(--gold); color:var(--black); border:none; cursor:pointer; border-radius:2px;">+1 Team B</button>
-    <button onclick="resetTeamScores()" style="padding:8px 14px; background:transparent; color:var(--cream); border:1px solid rgba(255,255,255,.3); cursor:pointer; border-radius:2px; margin-left:6px;">Reset</button>
+    <button onclick="addTeamPoint('A')" class="btn btn-gold btn-sm mr-6">+1 Team A</button>
+    <button onclick="addTeamPoint('B')" class="btn btn-gold btn-sm">+1 Team B</button>
+    <button onclick="resetTeamScores()" class="btn btn-outline-light btn-sm ml-6">Reset</button>
     <p id="team-assignment" style="margin-top:12px; opacity:.75;"></p>
-    <button onclick="assignCurrentChallengeToRandomTeam()" style="padding:8px 14px; background:transparent; color:var(--gold); border:1px solid rgba(212,168,67,.45); cursor:pointer; border-radius:2px;">Assign Current Challenge</button>
+    <button onclick="assignCurrentChallengeToRandomTeam()" class="btn btn-outline-gold btn-sm">Assign Current Challenge</button>
   </div>
 </section>
 
@@ -587,8 +592,8 @@
       <option value="A">Team A</option>
       <option value="B">Team B</option>
     </select>
-    <button onclick="addMission()" style="padding:8px 14px; background:var(--gold); color:var(--black); border:none; cursor:pointer; border-radius:2px;">Add Mission</button>
-    <button onclick="resetMissions()" style="padding:8px 14px; background:transparent; color:var(--cream); border:1px solid rgba(255,255,255,.3); cursor:pointer; border-radius:2px; margin-left:6px;">Reset Missions</button>
+    <button onclick="addMission()" class="btn btn-gold btn-sm">Add Mission</button>
+    <button onclick="resetMissions()" class="btn btn-outline-light btn-sm ml-6">Reset Missions</button>
     <p id="mission-msg" style="margin-top:10px;"></p>
     <div id="mission-board" style="margin-top:14px; text-align:left;"></div>
   </div>
@@ -601,8 +606,8 @@
     <select id="expense-payer" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px;"></select>
     <input type="number" id="expense-amount" min="0.01" step="0.01" placeholder="Amount" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:140px;">
     <input type="text" id="expense-note" placeholder="What was it for?" style="padding:8px; margin:5px; border:1px solid rgba(212,168,67,.3); background:var(--dark); color:var(--cream); border-radius:2px; width:45%;">
-    <button onclick="addExpense()" style="padding:8px 14px; background:var(--gold); color:var(--black); border:none; cursor:pointer; border-radius:2px;">Add Expense</button>
-    <button onclick="clearExpenses()" style="padding:8px 14px; background:transparent; color:var(--cream); border:1px solid rgba(255,255,255,.3); cursor:pointer; border-radius:2px; margin-left:6px;">Clear</button>
+    <button onclick="addExpense()" class="btn btn-gold btn-sm">Add Expense</button>
+    <button onclick="clearExpenses()" class="btn btn-outline-light btn-sm ml-6">Clear</button>
     <p id="expense-msg" style="margin-top:10px;"></p>
     <div id="expense-summary" style="margin-top:14px; text-align:left;"></div>
     <div id="expense-list" style="margin-top:8px; text-align:left;"></div>
@@ -613,7 +618,7 @@
   <h2 class="section-title fade-in">Punishment Wheel</h2>
   <div class="info-card fade-in" style="text-align:center;">
     <p>Failed or refused challenge? Spin for punishment.</p>
-    <button onclick="spinPunishmentWheel()" style="padding:10px 20px; background:var(--gold); color:var(--black); border:none; cursor:pointer; border-radius:2px;">Spin Wheel</button>
+    <button onclick="spinPunishmentWheel()" class="btn btn-gold">Spin Wheel</button>
     <p id="punishment-result" style="margin-top:12px; font-weight:bold;"></p>
     <p id="punishment-history" style="margin-top:8px; opacity:.65;"></p>
   </div>
@@ -623,7 +628,7 @@
   <h2 class="section-title fade-in">Stag Wisdom</h2>
   <div class="info-card fade-in" style="text-align:center;">
     <p>Random quotes for the ultimate stag do!</p>
-    <button onclick="getQuote()" style="padding:10px 20px; background:var(--gold); color:var(--black); border:none; cursor:pointer; border-radius:2px;">Get Quote</button>
+    <button onclick="getQuote()" class="btn btn-gold">Get Quote</button>
     <p id="random-quote" style="margin-top:10px; font-style:italic;"></p>
   </div>
 </section>
@@ -653,7 +658,7 @@
   <h2 class="section-title fade-in">End-of-Night Wrap</h2>
   <div class="info-card fade-in" style="text-align:center;">
     <p>Generate a quick summary card for the night.</p>
-    <button onclick="generateWrapUp()" style="padding:10px 20px; background:var(--gold); color:var(--black); border:none; cursor:pointer; border-radius:2px;">Generate Wrap-Up</button>
+    <button onclick="generateWrapUp()" class="btn btn-gold">Generate Wrap-Up</button>
     <div id="wrap-output" style="margin-top:14px; text-align:left; opacity:.9;"></div>
   </div>
 </section>
@@ -663,12 +668,14 @@
   <p style="opacity:.5; max-width:420px; margin:0 auto; line-height:1.7; font-size:14px;">
     3 nights. 6 lads. Zero hold bags. Maximum carnage. See you at Belfast International, 4am sharp.
   </p>
-  <a href="#" class="rsvp-btn" onclick="alert('VAMOS! See you at BFS.'); return false;">I'M IN</a>
+  <a href="#" class="rsvp-btn" role="button" aria-label="Confirm attendance" onclick="alert('VAMOS! See you at BFS.'); return false;">I'M IN</a>
 </div>
 
+</main>
 <footer>Barcelona Stag 2026 &#183; Ross Wightman</footer>
 
 <script src="rossstag.js"></script>
 </body>
 </html>
+
 
