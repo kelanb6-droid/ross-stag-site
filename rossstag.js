@@ -3986,6 +3986,52 @@
   }
   window.shareStagProgress = shareStagProgress;
 
+  // ── Click-to-copy for booking/trip codes ──
+  (function wireCodeCopy() {
+    const ids = ['hotel-booking-code', 'transfer-booking-code', 'trip-code'];
+    function copyText(text) {
+      if (!text) return Promise.reject();
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        return navigator.clipboard.writeText(text);
+      }
+      return new Promise(function (resolve, reject) {
+        try {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          ta.setAttribute('readonly', '');
+          ta.style.position = 'fixed';
+          ta.style.left = '-9999px';
+          document.body.appendChild(ta);
+          ta.select();
+          const ok = document.execCommand('copy');
+          document.body.removeChild(ta);
+          ok ? resolve() : reject();
+        } catch (e) { reject(); }
+      });
+    }
+    function attach(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.style.cursor = 'pointer';
+      el.setAttribute('role', 'button');
+      el.setAttribute('tabindex', '0');
+      el.setAttribute('title', 'Click to copy');
+      el.setAttribute('aria-label', 'Click to copy code');
+      const trigger = function () {
+        const text = (el.textContent || '').trim();
+        if (!text || text === 'Loading...' || text === 'Unavailable') return;
+        copyText(text)
+          .then(function () { if (typeof showToast === 'function') showToast('Code copied!', 2000); })
+          .catch(function () { if (typeof showToast === 'function') showToast('Copy failed', 2000); });
+      };
+      el.addEventListener('click', trigger);
+      el.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); trigger(); }
+      });
+    }
+    ids.forEach(attach);
+  })();
+
   // ── Service worker registration (best effort) ──
   if ('serviceWorker' in navigator && location.protocol === 'https:') {
     window.addEventListener('load', function () {

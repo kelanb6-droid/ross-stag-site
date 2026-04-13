@@ -1709,3 +1709,36 @@
   .light-theme .challenge-timer-expired { color: var(--error); }
   .light-theme .challenge-timer-warning { color: #C07A1F; }
   .light-theme .challenge-timer-bar { background: rgba(0,0,0,.08); }
+
+  /* ── Print stylesheet for itinerary and trip details ── */
+  @media print {
+    body {
+      background: #fff !important;
+      color: #000 !important;
+      font-size: 11pt;
+    }
+    .top-nav, .hero-controls, .nav-drawer, #scroll-top-btn,
+    #toast-container, #offline-indicator, #confetti-canvas,
+    .rsvp-extras, .rsvp-btn, #login-overlay, #approval-panel,
+    #poll-section, #challenge-generator-section, #team-battle-section,
+    #mission-section, #suggestion-section, #expenses-section,
+    #finale-section, footer {
+      display: none !important;
+    }
+    .hero { padding: 40px 0 20px; }
+    .hero h1, .hero h2, .section-title { color: #000 !important; text-shadow: none !important; }
+    .fade-in { opacity: 1 !important; transform: none !important; }
+    .countdown, .flight-card, .hotel-card, .cost-card, .rule-card,
+    .info-card, .lad-card, .restaurant-card, .dynamic-card,
+    .schedule-item {
+      background: #fff !important;
+      color: #000 !important;
+      border: 1px solid #ccc !important;
+      box-shadow: none !important;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+    a { color: #000 !important; text-decoration: underline; }
+    a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 9pt; opacity: .7; }
+    img { max-width: 100%; height: auto; }
+  }
