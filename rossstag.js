@@ -325,7 +325,7 @@
     },
     '160698': {
       title: 'Best Man Console: Joshua Online',
-      subtitle: 'Command center is unlocked. Approvals and chaos management are yours.',
+      subtitle: 'Command center is unlocked. Crew access and chaos management are yours.',
       role: 'Best Man Controller'
     },
     '230997': {
@@ -952,6 +952,67 @@
     };
   }
 
+  function mergeLiveSuggestions(liveList, queuedList, getKey) {
+    const merged = Array.isArray(liveList) ? liveList.slice(0, MAX_SYNC_ITEMS) : [];
+    const queued = Array.isArray(queuedList) ? queuedList : [];
+    const seen = new Set();
+    let changed = false;
+
+    merged.forEach(function (item) {
+      const key = getKey(item);
+      if (key) seen.add(key);
+    });
+
+    queued.forEach(function (item) {
+      const key = getKey(item);
+      if (!key || seen.has(key)) {
+        changed = true;
+        return;
+      }
+      seen.add(key);
+      merged.push(item);
+      changed = true;
+    });
+
+    return {
+      list: merged.slice(0, MAX_SYNC_ITEMS),
+      changed: changed
+    };
+  }
+
+  function normalizeSubmissionQueues() {
+    let changed = false;
+    let merged = mergeLiveSuggestions(approvedChallenges, pendingChallenges, function (item) {
+      return normalizeTitle(item && item.title);
+    });
+    approvedChallenges = merged.list;
+    changed = changed || merged.changed || pendingChallenges.length > 0;
+    pendingChallenges = [];
+
+    merged = mergeLiveSuggestions(approvedScheduleSuggestions, pendingScheduleSuggestions, function (item) {
+      return normalizeTitle((item && item.title) + '|' + (item && item.day) + '|' + (item && item.time));
+    });
+    approvedScheduleSuggestions = merged.list;
+    changed = changed || merged.changed || pendingScheduleSuggestions.length > 0;
+    pendingScheduleSuggestions = [];
+
+    merged = mergeLiveSuggestions(approvedSiteChangeSuggestions, pendingSiteChangeSuggestions, function (item) {
+      return normalizeTitle((item && item.sectionName) + '|' + (item && item.title) + '|' + (item && item.details));
+    });
+    approvedSiteChangeSuggestions = merged.list;
+    changed = changed || merged.changed || pendingSiteChangeSuggestions.length > 0;
+    pendingSiteChangeSuggestions = [];
+
+    merged = mergeLiveSuggestions(approvedActivitySuggestions, pendingActivitySuggestions, function (item) {
+      return normalizeTitle(item && item.title);
+    });
+    approvedActivitySuggestions = merged.list;
+    changed = changed || merged.changed || pendingActivitySuggestions.length > 0;
+    pendingActivitySuggestions = [];
+
+    return changed;
+  }
+
   function getCurrentCrewKey() {
     return getCrewBday();
   }
@@ -965,6 +1026,7 @@
   const LOCAL_EDIT_GUARD_MS = 2500;
 
   function saveChallengeData() {
+    normalizeSubmissionQueues();
     lastLocalEditAt = Date.now();
     saveJSON('pendingChallenges', pendingChallenges);
     saveJSON('approvedChallenges', approvedChallenges);
@@ -992,6 +1054,10 @@
     saveJSON('packingChecked', packingChecked);
     saveCrewPersonalizationOverrides();
     queueChallengeStateSync(false);
+  }
+
+  if (normalizeSubmissionQueues()) {
+    saveChallengeData();
   }
 
   function getChallengeStatePayload() {
@@ -1068,6 +1134,7 @@
     challengeMetrics = safe.challengeMetrics;
     challengeHistory = safe.challengeHistory;
     packingChecked = safe.packingChecked;
+    normalizeSubmissionQueues();
   }
 
   function refreshChallengeUiFromState() {
@@ -1504,7 +1571,7 @@
     const lines = [
       ['Approved Challenges', String(approvedCount)],
       ['Completed Challenges', String(completedCount)],
-      ['Pending Approval', String(pendingCount)],
+      ['Pending Queue', String(pendingCount)],
       ['Top Voted Challenge', topChallenge ? topChallenge.title + ' (' + (topChallenge.votes || 0) + ')' : 'N/A'],
       ['Winning Team', winningTeam + ' (' + teamBattle.scoreA + '-' + teamBattle.scoreB + ')'],
       ['Top Contributor', topSubmitter + ' (' + topSubmitterCount + ')']
@@ -1563,7 +1630,7 @@
       return;
     }
     challengeSubmissionLog[submissionKey] = submissionsToday + 1;
-    pendingChallenges.push({
+    approvedChallenges.push({
       id: Date.now().toString() + Math.random().toString(36).slice(2, 7),
       title,
       type,
@@ -1576,11 +1643,12 @@
       hidden: false
     });
     saveChallengeData();
-    msg.textContent = 'Challenge submitted for best man approval.';
+    msg.textContent = 'Challenge submitted and now live for the crew.';
     msg.style.color = 'var(--gold)';
     titleInput.value = '';
     notesInput.value = '';
     refreshPendingChallengeViews();
+    displayApprovedChallenges();
   }
 
   function suggestScheduleItem() {
@@ -1639,7 +1707,7 @@
     }
 
     scheduleSubmissionLog[submissionKey] = submissionsToday + 1;
-    pendingScheduleSuggestions.push({
+    approvedScheduleSuggestions.push({
       id: Date.now().toString() + Math.random().toString(36).slice(2, 7),
       title,
       day,
@@ -1651,7 +1719,7 @@
     });
     saveChallengeData();
 
-    msg.textContent = 'Schedule suggestion submitted for best man approval.';
+    msg.textContent = 'Schedule suggestion submitted and added live.';
     msg.style.color = 'var(--gold)';
     titleInput.value = '';
     dayInput.value = '';
@@ -1659,7 +1727,7 @@
     detailsInput.value = '';
     linkInput.value = '';
 
-    displayPendingScheduleSuggestions();
+    displayApprovedScheduleSuggestions();
   }
 
   function suggestSiteChange() {
@@ -1711,7 +1779,7 @@
     }
 
     siteChangeSubmissionLog[submissionKey] = submissionsToday + 1;
-    pendingSiteChangeSuggestions.push({
+    approvedSiteChangeSuggestions.push({
       id: Date.now().toString() + Math.random().toString(36).slice(2, 7),
       sectionName,
       title,
@@ -1722,14 +1790,14 @@
     });
     saveChallengeData();
 
-    msg.textContent = 'Site change submitted for best man approval.';
+    msg.textContent = 'Site change submitted and visible to the crew.';
     msg.style.color = 'var(--gold)';
     sectionInput.value = '';
     titleInput.value = '';
     detailsInput.value = '';
     linkInput.value = '';
 
-    displayPendingSiteChangeSuggestions();
+    displayApprovedSiteChangeSuggestions();
   }
 
   function displayPendingSiteChangeSuggestions() {
@@ -1817,12 +1885,12 @@
     clearElement(container);
 
     if (!approvedSiteChangeSuggestions.length) {
-      container.innerHTML = '<p style="opacity:.6;">No approved site change suggestions yet.</p>';
+      container.innerHTML = '<p style="opacity:.6;">No crew site change suggestions yet.</p>';
       return;
     }
 
     const heading = document.createElement('h3');
-    heading.textContent = 'Approved Site Change Suggestions';
+    heading.textContent = 'Crew Site Change Suggestions';
     container.appendChild(heading);
 
     approvedSiteChangeSuggestions
@@ -1909,7 +1977,7 @@
     }
 
     activitySubmissionLog[submissionKey] = submissionsToday + 1;
-    pendingActivitySuggestions.push({
+    approvedActivitySuggestions.push({
       id: Date.now().toString() + Math.random().toString(36).slice(2, 7),
       title: title,
       details: details,
@@ -1921,13 +1989,13 @@
     });
     saveChallengeData();
 
-    msg.textContent = 'Activity submitted for Joshua to approve.';
+    msg.textContent = 'Activity submitted and now open for crew voting.';
     msg.style.color = 'var(--gold)';
     titleInput.value = '';
     detailsInput.value = '';
     priceInput.value = '';
     linkInput.value = '';
-    displayPendingActivitySuggestions();
+    displayApprovedActivitySuggestions();
   }
 
   function displayPendingActivitySuggestions() {
@@ -2256,7 +2324,7 @@
     clearElement(container);
 
     const rows = [
-      { label: 'Joshua (Best Man Admin)', code: bmBday, note: 'Full approval access', removable: false },
+      { label: 'Joshua (Best Man Admin)', code: bmBday, note: 'Full admin access', removable: false },
       { label: 'Ross (Groom)', code: groomBday, note: 'Login allowed, schedule hidden', removable: false }
     ];
 
@@ -2700,7 +2768,7 @@
     loadTripDetailsFromCloud();
     showWelcomeGreeting(getCrewDisplayName(bday));
     if (isAdmin) {
-      showToast('Admin panel loaded — scroll to Best Man Approval', 4000);
+      showToast('Admin panel loaded — scroll to Best Man Admin', 4000);
     }
   }
 
@@ -2851,26 +2919,28 @@
     const container = document.getElementById('pending-challenges-public');
     const summary = document.getElementById('pending-challenges-public-summary');
     const updated = document.getElementById('pending-challenges-public-updated');
+    const recentChallenges = approvedChallenges
+      .filter(function (item) { return !item.hidden && (item.reports || 0) < 3; })
+      .slice()
+      .sort(function (a, b) { return (b.createdAt || 0) - (a.createdAt || 0); });
     if (!container) return;
     clearElement(container);
     if (summary) summary.textContent = '';
     if (updated) updated.textContent = '';
     if (!loggedIn) {
-      container.innerHTML = '<p style="opacity:.6;">Log in to view pending challenge suggestions.</p>';
+      container.innerHTML = '<p style="opacity:.6;">Log in to view the latest challenge suggestions.</p>';
       return;
     }
-    if (!pendingChallenges.length) {
-      if (summary) summary.textContent = '0 pending suggestions';
-      container.innerHTML = '<p style="opacity:.6;">No pending challenges right now.</p>';
+    if (!recentChallenges.length) {
+      if (summary) summary.textContent = '0 live suggestions';
+      container.innerHTML = '<p style="opacity:.6;">No live challenges right now.</p>';
       return;
     }
-    const sorted = pendingChallenges
-      .slice()
-      .sort(function (a, b) { return (b.createdAt || 0) - (a.createdAt || 0); });
+    const sorted = recentChallenges;
     const latest = sorted[0];
     const latestBy = latest ? getCrewDisplayName(latest.suggestedBy) : 'Crew';
     if (summary) {
-      summary.textContent = String(sorted.length) + ' pending suggestions • latest from ' + latestBy;
+      summary.textContent = String(sorted.length) + ' live suggestions • latest from ' + latestBy;
     }
     if (updated) {
       updated.textContent = latest && latest.createdAt
@@ -2925,9 +2995,9 @@
     const visibleChallenges = approvedChallenges
       .filter(item => !item.hidden && (item.reports || 0) < 3)
       .sort((a, b) => (b.votes || 0) - (a.votes || 0) || b.createdAt - a.createdAt);
-    container.innerHTML = '<h3>Approved Challenges</h3>';
+    container.innerHTML = '<h3>Live Crew Challenges</h3>';
     if (!visibleChallenges.length) {
-      container.innerHTML += '<p style="opacity:.6;">No approved challenges yet.</p>';
+      container.innerHTML += '<p style="opacity:.6;">No live challenges yet.</p>';
       return;
     }
     visibleChallenges.forEach(item => {
