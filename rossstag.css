@@ -1759,3 +1759,66 @@
   /* ── Scroll-to-top button visibility control ── */
   #scroll-top-btn { opacity: 0; pointer-events: none; transition: opacity .3s ease, transform .3s ease; transform: translateY(10px); }
   #scroll-top-btn.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
+
+  /* ── Keyboard shortcut help panel ── */
+  #shortcut-help-panel {
+    position: fixed; inset: 0;
+    background: rgba(10,10,10,.65); backdrop-filter: blur(4px);
+    display: none; align-items: center; justify-content: center;
+    z-index: 10000; padding: 16px;
+  }
+  #shortcut-help-panel.visible { display: flex; animation: fadeUp .2s ease-out; }
+  #shortcut-help-panel > h3, #shortcut-help-panel > dl, #shortcut-help-panel > .shortcut-close { pointer-events: auto; }
+  #shortcut-help-panel::before {
+    content: ''; position: absolute; inset: 0;
+  }
+  #shortcut-help-panel > h3,
+  #shortcut-help-panel > dl,
+  #shortcut-help-panel > .shortcut-close {
+    position: relative; z-index: 1;
+  }
+  #shortcut-help-panel {
+    color: var(--cream);
+  }
+  #shortcut-help-panel::after {
+    content: ''; display: none;
+  }
+  #shortcut-help-panel .shortcut-close,
+  #shortcut-help-panel > h3,
+  #shortcut-help-panel > dl { max-width: 420px; width: 100%; }
+  #shortcut-help-panel > h3 {
+    font-family: 'Bebas Neue', sans-serif; letter-spacing: 3px;
+    color: var(--gold); font-size: 22px; text-align: center;
+    background: var(--dark); padding: 16px 16px 0; margin: 0;
+    border-radius: 12px 12px 0 0;
+  }
+  #shortcut-help-panel > dl {
+    background: var(--dark); padding: 16px 20px;
+    display: grid; grid-template-columns: auto 1fr; gap: 8px 16px;
+    margin: 0; font-size: 14px; line-height: 1.5;
+  }
+  #shortcut-help-panel > dl dt {
+    font-family: monospace; font-weight: 700;
+    background: rgba(212,168,67,.15); color: var(--gold);
+    padding: 4px 10px; border-radius: 4px;
+    min-width: 40px; text-align: center; align-self: start;
+  }
+  #shortcut-help-panel > dl dd { margin: 0; align-self: center; }
+  #shortcut-help-panel > .shortcut-close {
+    background: var(--gold); color: var(--black); border: none;
+    padding: 12px 20px; font-weight: 700; letter-spacing: 2px;
+    cursor: pointer; border-radius: 0 0 12px 12px;
+    text-transform: uppercase; font-size: 13px;
+  }
+  .light-theme #shortcut-help-panel { background: rgba(245,240,232,.75); color: var(--black); }
+  .light-theme #shortcut-help-panel > h3,
+  .light-theme #shortcut-help-panel > dl { background: #fff; }
+
+  /* ── Guard :hover effects behind real pointer support (touch fix) ── */
+  @media (hover: none) {
+    .lad-card:hover, .flight-card:hover, .hotel-card:hover,
+    .cost-card:hover, .rule-card:hover, .info-card:hover,
+    .restaurant-card:hover, .dynamic-card:hover {
+      transform: none;
+    }
+  }

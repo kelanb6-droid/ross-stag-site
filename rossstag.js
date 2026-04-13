@@ -1182,7 +1182,13 @@
       el.style.transform = 'translateX(-50%) translateY(20px)';
     }
   }
-  window.addEventListener('online', function () { setOfflineIndicator(false); });
+  window.addEventListener('online', function () {
+    setOfflineIndicator(false);
+    // Attempt to flush any pending local edits now that we're back online.
+    if (typeof queueChallengeStateSync === 'function') {
+      try { queueChallengeStateSync(true); } catch (_) { /* ignore */ }
+    }
+  });
   window.addEventListener('offline', function () { setOfflineIndicator(true); });
 
   function queueChallengeStateSync(force) {
@@ -3954,8 +3960,40 @@
       if (e.key === 'g' && actions.getChallenge) { e.preventDefault(); actions.getChallenge(); }
       else if (e.key === 's' && actions.skipChallenge) { e.preventDefault(); actions.skipChallenge(); }
       else if (e.key === 'c' && actions.markChallengeComplete) { e.preventDefault(); actions.markChallengeComplete(); }
+      else if (e.key === '?' || (e.shiftKey && e.key === '/')) { e.preventDefault(); showShortcutHelp(); }
+      else if (e.key === 'Escape') {
+        const panel = document.getElementById('shortcut-help-panel');
+        if (panel && panel.classList.contains('visible')) { panel.classList.remove('visible'); }
+      }
     });
   })();
+
+  function showShortcutHelp() {
+    let panel = document.getElementById('shortcut-help-panel');
+    if (!panel) {
+      panel = document.createElement('div');
+      panel.id = 'shortcut-help-panel';
+      panel.setAttribute('role', 'dialog');
+      panel.setAttribute('aria-label', 'Keyboard shortcuts');
+      panel.innerHTML = '<h3>Keyboard Shortcuts</h3>' +
+        '<dl>' +
+        '<dt>G</dt><dd>Generate a challenge</dd>' +
+        '<dt>S</dt><dd>Skip current challenge</dd>' +
+        '<dt>C</dt><dd>Mark challenge complete</dd>' +
+        '<dt>?</dt><dd>Toggle this help</dd>' +
+        '<dt>Esc</dt><dd>Close this help</dd>' +
+        '</dl>' +
+        '<button type="button" class="shortcut-close" aria-label="Close">Close</button>';
+      document.body.appendChild(panel);
+      panel.querySelector('.shortcut-close').addEventListener('click', function () {
+        panel.classList.remove('visible');
+      });
+      panel.addEventListener('click', function (e) {
+        if (e.target === panel) panel.classList.remove('visible');
+      });
+    }
+    panel.classList.toggle('visible');
+  }
 
   // ── Calendar ICS download ──
   function downloadStagIcs() {
@@ -4003,6 +4041,27 @@
     }
   }
   window.shareStagProgress = shareStagProgress;
+
+  // ── Haptic feedback helper ──
+  function hapticTap(pattern) {
+    if (!navigator.vibrate) return;
+    try { navigator.vibrate(pattern || 18); } catch (_) { /* ignore */ }
+  }
+  window.hapticTap = hapticTap;
+
+  // Haptic feedback on key primary actions via event delegation. Done here
+  // so it doesn't require editing every function's internals.
+  document.addEventListener('click', function (e) {
+    const el = e.target.closest('[data-action]');
+    if (!el) return;
+    const action = el.getAttribute('data-action');
+    if (!action) return;
+    if (action === 'getChallenge' || action === 'markChallengeComplete' ||
+        action === 'skipChallenge' || action === 'addTeamPoint' ||
+        action === 'spinPunishmentWheel' || action === 'celebrateRSVP') {
+      hapticTap(action === 'celebrateRSVP' ? [30, 40, 30] : 18);
+    }
+  });
 
   // ── Scroll-to-top button visibility ──
   (function wireScrollTopVisibility() {
