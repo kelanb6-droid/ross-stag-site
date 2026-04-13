@@ -1742,3 +1742,20 @@
     a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 9pt; opacity: .7; }
     img { max-width: 100%; height: auto; }
   }
+
+  /* ── Utility: visually hidden (for screen readers only) ── */
+  .visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0,0,0,0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+  }
+
+  /* ── Scroll-to-top button visibility control ── */
+  #scroll-top-btn { opacity: 0; pointer-events: none; transition: opacity .3s ease, transform .3s ease; transform: translateY(10px); }
+  #scroll-top-btn.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }

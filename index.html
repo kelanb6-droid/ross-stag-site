@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="rossstag.css">
+<link rel="stylesheet" href="rossstag.css?v=20260413">
 </head>
 <body>
 <a class="skip-link" href="#main-content">Skip to content</a>
@@ -135,13 +135,14 @@
 </div>
 
 <main id="main-content">
-<div class="countdown fade-in">
+<div class="countdown fade-in" role="timer" aria-label="Countdown to takeoff">
   <div class="countdown-label">Countdown to Takeoff</div>
+  <p id="countdown-sr" class="visually-hidden" aria-live="polite" aria-atomic="true"></p>
   <div class="countdown-grid">
-    <div class="countdown-item"><div class="countdown-num" id="days">--</div><div class="countdown-unit">Days</div></div>
-    <div class="countdown-item"><div class="countdown-num" id="hours">--</div><div class="countdown-unit">Hours</div></div>
-    <div class="countdown-item"><div class="countdown-num" id="mins">--</div><div class="countdown-unit">Minutes</div></div>
-    <div class="countdown-item"><div class="countdown-num" id="secs">--</div><div class="countdown-unit">Seconds</div></div>
+    <div class="countdown-item"><div class="countdown-num" id="days" aria-hidden="true">--</div><div class="countdown-unit">Days</div></div>
+    <div class="countdown-item"><div class="countdown-num" id="hours" aria-hidden="true">--</div><div class="countdown-unit">Hours</div></div>
+    <div class="countdown-item"><div class="countdown-num" id="mins" aria-hidden="true">--</div><div class="countdown-unit">Minutes</div></div>
+    <div class="countdown-item"><div class="countdown-num" id="secs" aria-hidden="true">--</div><div class="countdown-unit">Seconds</div></div>
   </div>
   <div style="margin-top:20px;">
     <div class="progress-label">Trip Progress</div>
@@ -848,7 +849,7 @@
   </div>
 </footer>
 
-<script src="rossstag.js"></script>
+<script src="rossstag.js?v=20260413"></script>
 <script async defer src="https://widget.getyourguide.com/dist/pa.umd.min.js" data-gyg-partner-id="0"></script>
 </body>
 </html>

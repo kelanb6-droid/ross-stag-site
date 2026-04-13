@@ -3,7 +3,9 @@
   const MS_PER_HOUR = 60 * MS_PER_MINUTE;
   const MS_PER_DAY = 24 * MS_PER_HOUR;
   const DAYS_UNTIL_ACTIVE = 7;
-  const target = new Date('2026-05-03T06:10:00').getTime();
+  // 3 May 2026 06:10 BST (UTC+1) — Belfast International departure
+  const target = Date.parse('2026-05-03T06:10:00+01:00');
+  let lastAnnouncedDays = -1;
   function tick() {
     const cdEl = document.querySelector('.countdown');
     const daysEl = document.getElementById('days');
@@ -12,16 +14,28 @@
     const secsEl = document.getElementById('secs');
     if (!daysEl || !hoursEl || !minsEl || !secsEl) return;
     const diff = target - Date.now();
+    const srEl = document.getElementById('countdown-sr');
     if (diff < 0) {
       [daysEl, hoursEl, minsEl, secsEl].forEach(function (el) { el.textContent = '00'; });
       if (cdEl) { cdEl.classList.remove('trip-active'); cdEl.classList.add('trip-complete'); }
+      if (srEl && lastAnnouncedDays !== 0) { srEl.textContent = 'Trip has begun. Vamos!'; lastAnnouncedDays = 0; }
       return;
     }
     if (cdEl && diff < DAYS_UNTIL_ACTIVE * MS_PER_DAY) { cdEl.classList.add('trip-active'); }
-    daysEl.textContent = String(Math.floor(diff/MS_PER_DAY)).padStart(2,'0');
-    hoursEl.textContent = String(Math.floor((diff%MS_PER_DAY)/MS_PER_HOUR)).padStart(2,'0');
-    minsEl.textContent = String(Math.floor((diff%MS_PER_HOUR)/MS_PER_MINUTE)).padStart(2,'0');
-    secsEl.textContent = String(Math.floor((diff%MS_PER_MINUTE)/MS_PER_SECOND)).padStart(2,'0');
+    const days = Math.floor(diff / MS_PER_DAY);
+    const hours = Math.floor((diff % MS_PER_DAY) / MS_PER_HOUR);
+    const mins = Math.floor((diff % MS_PER_HOUR) / MS_PER_MINUTE);
+    const secs = Math.floor((diff % MS_PER_MINUTE) / MS_PER_SECOND);
+    daysEl.textContent = String(days).padStart(2, '0');
+    hoursEl.textContent = String(hours).padStart(2, '0');
+    minsEl.textContent = String(mins).padStart(2, '0');
+    secsEl.textContent = String(secs).padStart(2, '0');
+    // Throttle a11y announcements — only update when the day count changes.
+    if (srEl && days !== lastAnnouncedDays) {
+      srEl.textContent = days + ' day' + (days === 1 ? '' : 's') +
+        ', ' + hours + ' hour' + (hours === 1 ? '' : 's') + ' until takeoff.';
+      lastAnnouncedDays = days;
+    }
   }
   tick();
   let countdownInterval = setInterval(tick, MS_PER_SECOND);
@@ -3822,6 +3836,10 @@
   }
 
   function launchConfetti() {
+    // Respect user's reduced-motion preference — skip the animation entirely.
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return;
+    }
     var canvas = document.getElementById('confetti-canvas');
     if (!canvas) return;
     var ctx = canvas.getContext('2d');
@@ -3985,6 +4003,22 @@
     }
   }
   window.shareStagProgress = shareStagProgress;
+
+  // ── Scroll-to-top button visibility ──
+  (function wireScrollTopVisibility() {
+    const btn = document.getElementById('scroll-top-btn');
+    if (!btn) return;
+    let raf = 0;
+    function update() {
+      raf = 0;
+      btn.classList.toggle('visible', window.scrollY > 400);
+    }
+    window.addEventListener('scroll', function () {
+      if (raf) return;
+      raf = requestAnimationFrame(update);
+    }, { passive: true });
+    update();
+  })();
 
   // ── Click-to-copy for booking/trip codes ──
   (function wireCodeCopy() {
