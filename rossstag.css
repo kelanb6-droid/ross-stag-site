@@ -892,6 +892,33 @@
     color: var(--accent);
     opacity: 1;
   }
+  .challenge-timer-bar {
+    width: 100%;
+    max-width: 360px;
+    height: 6px;
+    margin: 6px auto 0;
+    background: rgba(255,255,255,.08);
+    border-radius: 3px;
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity .25s ease;
+  }
+  .challenge-timer-bar.visible { opacity: 1; }
+  .light-theme .challenge-timer-bar { background: rgba(0,0,0,.08); }
+  #challenge-timer-bar-fill {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, var(--gold), #F4A423);
+    border-radius: 3px;
+    transition: width .5s linear, background .3s ease;
+  }
+  #challenge-timer-bar-fill.warning {
+    background: linear-gradient(90deg, #F4A423, var(--accent));
+  }
+  #challenge-timer-bar-fill.expired {
+    background: var(--accent);
+    width: 100% !important;
+  }
   .challenge-insights,
   .challenge-history {
     margin-top: 10px;

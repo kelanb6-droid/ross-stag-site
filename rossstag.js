@@ -3308,6 +3308,50 @@
     el.classList.add(className || 'challenge-timer-idle');
   }
 
+  function updateChallengeTimerBar(percent, state) {
+    const bar = document.getElementById('challenge-timer-bar');
+    const fill = document.getElementById('challenge-timer-bar-fill');
+    if (!bar || !fill) return;
+    if (state === 'hidden') {
+      bar.classList.remove('visible');
+      fill.classList.remove('warning', 'expired');
+      fill.style.width = '100%';
+      return;
+    }
+    bar.classList.add('visible');
+    fill.classList.remove('warning', 'expired');
+    if (state === 'warning') fill.classList.add('warning');
+    if (state === 'expired') fill.classList.add('expired');
+    const clamped = Math.max(0, Math.min(100, percent));
+    fill.style.width = clamped + '%';
+  }
+
+  function playChallengeTimerBeep() {
+    try {
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      if (!Ctx) return;
+      const ctx = new Ctx();
+      const start = ctx.currentTime;
+      [0, 0.25, 0.5].forEach(function (offset) {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, start + offset);
+        gain.gain.setValueAtTime(0.0001, start + offset);
+        gain.gain.exponentialRampToValueAtTime(0.2, start + offset + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, start + offset + 0.22);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(start + offset);
+        osc.stop(start + offset + 0.23);
+      });
+      setTimeout(function () { if (ctx.close) ctx.close(); }, 900);
+    } catch (e) { /* Audio not available, ignore. */ }
+    if (navigator.vibrate) {
+      try { navigator.vibrate([200, 100, 200]); } catch (e) { /* Ignore vibration errors. */ }
+    }
+  }
+
   function stopChallengeTimer(idleText) {
     if (challengeTimerInterval) {
       clearInterval(challengeTimerInterval);
@@ -3318,6 +3362,7 @@
     challengeTimerWarningSent = false;
     challengeTimerExpiredSent = false;
     setChallengeTimerText(idleText || 'No active challenge timer.', 'challenge-timer-idle');
+    updateChallengeTimerBar(100, 'hidden');
   }
 
   function formatOutcomeLabel(outcome) {
@@ -3393,15 +3438,19 @@
   function updateChallengeTimerDisplay() {
     if (!currentChallenge || !currentChallengeDeadline) {
       setChallengeTimerText('No active challenge timer.', 'challenge-timer-idle');
+      updateChallengeTimerBar(100, 'hidden');
       return;
     }
+    const totalMs = Math.max(1, (currentChallengeLimitMinutes || 0) * 60000);
     const msLeft = currentChallengeDeadline - Date.now();
     if (msLeft <= 0) {
       setChallengeTimerText('Time expired for this challenge.', 'challenge-timer-expired');
+      updateChallengeTimerBar(100, 'expired');
       if (!challengeTimerExpiredSent) {
         challengeTimerExpiredSent = true;
         recordChallengeOutcome('expired', currentChallenge);
         notifyChallengeTimer('Challenge timer expired', 'Time is up for: ' + currentChallenge.title, 'challenge-expired');
+        playChallengeTimerBeep();
       }
       return;
     }
@@ -3412,11 +3461,14 @@
     }
 
     const formatted = formatChallengeTimer(msLeft);
+    const percentLeft = (msLeft / totalMs) * 100;
     if (msLeft <= 60000) {
       setChallengeTimerText('Time left: ' + formatted + ' (final minute)', 'challenge-timer-warning');
+      updateChallengeTimerBar(percentLeft, 'warning');
       return;
     }
     setChallengeTimerText('Time left: ' + formatted, 'challenge-timer-active');
+    updateChallengeTimerBar(percentLeft, 'active');
   }
 
   function startChallengeTimer(challenge) {

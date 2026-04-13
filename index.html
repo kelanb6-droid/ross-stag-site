@@ -699,6 +699,9 @@
     </select>
     <select id="challenge-time-limit" class="form-input" aria-label="Challenge time limit">
       <option value="auto">Auto time limit</option>
+      <option value="1">1 minute</option>
+      <option value="2">2 minutes</option>
+      <option value="3">3 minutes</option>
       <option value="5">5 minutes</option>
       <option value="10">10 minutes</option>
       <option value="15">15 minutes</option>
@@ -711,6 +714,7 @@
     <p id="random-challenge" style="margin-top:10px; font-weight:bold;"></p>
     <p id="random-challenge-meta" style="margin-top:6px; opacity:.6;"></p>
     <p id="challenge-timer" class="challenge-timer challenge-timer-idle" aria-live="polite">No active challenge timer.</p>
+    <div id="challenge-timer-bar" class="challenge-timer-bar" aria-hidden="true"><div id="challenge-timer-bar-fill"></div></div>
     <p id="challenge-complete-msg" style="margin-top:6px; opacity:.7;"></p>
     <div id="challenge-insights" class="challenge-insights" aria-live="polite"></div>
     <div id="challenge-history" class="challenge-history" aria-live="polite"></div>
