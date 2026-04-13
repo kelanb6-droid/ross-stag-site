@@ -308,6 +308,7 @@
     '240598': 'Ciaran'
   };
   const crewNameByBday = Object.assign({}, defaultCrewNameByBday);
+  const lockedCrewNameByBday = Object.assign({}, defaultCrewNameByBday);
   const crewMemberIdByBday = {
     '170997': 'ross',
     '160698': 'joshua',
@@ -368,9 +369,18 @@
   if (!crewNameOverrides || typeof crewNameOverrides !== 'object' || Array.isArray(crewNameOverrides)) {
     crewNameOverrides = {};
   }
+  function normalizeCrewDisplayNameByCode(code, name) {
+    const normalizedCode = normalizeCrewCode(code);
+    const sanitized = sanitizeText(name, 40);
+    if (!sanitized) return '';
+    if (lockedCrewNameByBday[normalizedCode]) {
+      return lockedCrewNameByBday[normalizedCode];
+    }
+    return sanitized;
+  }
   Object.keys(crewNameOverrides).forEach(function (code) {
     const normalizedCode = normalizeCrewCode(code);
-    const name = sanitizeText(crewNameOverrides[code], 40);
+    const name = normalizeCrewDisplayNameByCode(normalizedCode, crewNameOverrides[code]);
     if (!normalizedCode || !name) return;
     crewNameByBday[normalizedCode] = name;
   });
@@ -2311,7 +2321,7 @@
     if (!codeInput || !nameInput || !msg) return;
 
     const normalizedCode = normalizeCrewCode(codeInput.value);
-    const normalizedName = sanitizeText(nameInput.value, 40);
+    const normalizedName = normalizeCrewDisplayNameByCode(codeInput.value, nameInput.value);
 
     if (!normalizedCode) {
       msg.textContent = 'Enter a valid crew code first.';
