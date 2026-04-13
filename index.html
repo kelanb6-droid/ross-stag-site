@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data:; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' https: data:; font-src 'self' https: data:; connect-src 'self' https:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data:; script-src 'self' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' https: data: blob:; font-src 'self' https: data:; connect-src 'self' https:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'; manifest-src 'self';">
 <meta name="supabase-url" content="">
 <meta name="supabase-anon-key" content="">
 <meta name="description" content="Ross Wightman's Stag Do in Barcelona, May 2026. 3 nights, 6 lads, maximum fun!">
@@ -33,9 +33,9 @@
     <p class="login-desc">Enter your crew password (name or DOB code) to unlock the lads-only schedule and ideas board.</p>
     <div class="login-input-wrap">
       <input type="password" id="crew-login-bday" placeholder="Name or DOB code" autocomplete="one-time-code" aria-label="Crew password">
-      <button type="button" id="toggle-code-vis" class="toggle-vis-btn" aria-label="Show code" onclick="toggleCodeVisibility()">&#x1F441;</button>
+      <button type="button" id="toggle-code-vis" class="toggle-vis-btn" aria-label="Show code" data-action="toggleCodeVisibility">&#x1F441;</button>
     </div>
-    <button type="button" class="btn btn-gold login-submit-btn" onclick="crewLogin()">&#x1F513; Unlock</button>
+    <button type="button" class="btn btn-gold login-submit-btn" data-action="crewLogin">&#x1F513; Unlock</button>
     <p id="crew-login-msg" class="login-msg"></p>
   </div>
 </div>
@@ -120,8 +120,8 @@
 <div class="hero">
   <div class="hero-content">
     <div class="hero-controls">
-      <button id="theme-toggle" class="icon-btn" type="button" onclick="toggleTheme()" aria-label="Switch to light theme" title="Switch theme">&#x1F319;</button>
-      <button id="crew-logout-btn" class="icon-btn icon-btn-secondary" type="button" onclick="crewLogout()" aria-label="Log out" title="Log out" style="display:none;">&#x23CF;</button>
+      <button id="theme-toggle" class="icon-btn" type="button" data-action="toggleTheme" aria-label="Switch to light theme" title="Switch theme">&#x1F319;</button>
+      <button id="crew-logout-btn" class="icon-btn icon-btn-secondary" type="button" data-action="crewLogout" aria-label="Log out" title="Log out" style="display:none;">&#x23CF;</button>
     </div>
     <div class="hero-emoji">&#127466;&#127480;</div>
     <h1>BARCELONA</h1>
@@ -162,8 +162,8 @@
     </div>
     <textarea id="lads-custom-subtitle" rows="2" placeholder="Your personal subtitle"></textarea>
     <div class="lads-customizer-actions">
-      <button type="button" class="btn btn-gold btn-sm" onclick="saveMyCrewPersonalization()">Save My Profile</button>
-      <button type="button" class="btn btn-outline-light btn-sm" onclick="resetMyCrewPersonalization()">Reset</button>
+      <button type="button" class="btn btn-gold btn-sm" data-action="saveMyCrewPersonalization">Save My Profile</button>
+      <button type="button" class="btn btn-outline-light btn-sm" data-action="resetMyCrewPersonalization">Reset</button>
     </div>
     <p id="lads-customizer-msg"></p>
   </div>
@@ -612,7 +612,7 @@
       <option value="Chaos">Chaos</option>
     </select>
     <textarea id="challenge-notes" rows="3" placeholder="Optional details..." class="form-input form-input-wide"></textarea>
-    <button onclick="suggestChallenge()" class="btn btn-gold btn-sm">Submit Challenge</button>
+    <button data-action="suggestChallenge" class="btn btn-gold btn-sm">Submit Challenge</button>
     <p id="challenge-msg" style="margin-top:10px;"></p>
   </div>
   <div class="info-card fade-in" style="margin-top:20px; text-align:center;">
@@ -623,7 +623,7 @@
     <input type="text" id="schedule-time" placeholder="Time (e.g. 15:30)" class="form-input form-input-mid">
     <textarea id="schedule-details" rows="3" placeholder="Details..." class="form-input form-input-wide"></textarea>
     <input type="url" id="schedule-link" placeholder="Optional link (https://...)" class="form-input form-input-wide">
-    <button onclick="suggestScheduleItem()" class="btn btn-gold btn-sm">Submit Schedule Item</button>
+    <button data-action="suggestScheduleItem" class="btn btn-gold btn-sm">Submit Schedule Item</button>
     <p id="schedule-suggestion-msg" style="margin-top:10px;"></p>
   </div>
   <div class="info-card fade-in" style="margin-top:20px; text-align:center;">
@@ -633,7 +633,7 @@
     <input type="text" id="site-change-title" placeholder="Change title" class="form-input form-input-wide">
     <textarea id="site-change-details" rows="3" placeholder="Describe the change..." class="form-input form-input-wide"></textarea>
     <input type="url" id="site-change-link" placeholder="Optional link (https://...)" class="form-input form-input-wide">
-    <button onclick="suggestSiteChange()" class="btn btn-gold btn-sm">Submit Site Change</button>
+    <button data-action="suggestSiteChange" class="btn btn-gold btn-sm">Submit Site Change</button>
     <p id="site-change-msg" style="margin-top:10px;"></p>
   </div>
   <div class="info-card fade-in" style="margin-top:20px; text-align:center;">
@@ -643,7 +643,7 @@
     <textarea id="activity-suggest-details" rows="3" placeholder="What is it? Why should we do it?" class="form-input form-input-wide"></textarea>
     <input type="text" id="activity-suggest-price" placeholder="Estimated price (e.g. EUR 25-40)" class="form-input form-input-mid">
     <input type="url" id="activity-suggest-link" placeholder="Optional link (https://...)" class="form-input form-input-wide">
-    <button onclick="suggestActivity()" class="btn btn-gold btn-sm">Submit Activity</button>
+    <button data-action="suggestActivity" class="btn btn-gold btn-sm">Submit Activity</button>
     <p id="activity-suggest-msg" style="margin-top:10px;"></p>
   </div>
   <div class="info-card fade-in" style="margin-top:20px; text-align:left;">
@@ -665,7 +665,7 @@
       <h3>Crew Access List</h3>
       <div class="admin-add-row">
         <input type="text" id="approval-new-code" placeholder="Add code (6 digits or DDMMYYYY)" class="admin-input">
-        <button onclick="addCrewCodeByJoshua()" class="btn btn-gold btn-sm">Add Code</button>
+        <button data-action="addCrewCodeByJoshua" class="btn btn-gold btn-sm">Add Code</button>
       </div>
       <p id="approval-code-msg" class="admin-msg"></p>
       <div id="joshua-approval-list"></div>
@@ -685,7 +685,7 @@
   <h2 class="section-title fade-in">Stag Do Drinking Game</h2>
   <div class="info-card fade-in" style="text-align:center;">
     <p>Click for a random drinking challenge!</p>
-    <button onclick="getDrinkingChallenge()" class="btn btn-gold">Get Challenge</button>
+    <button data-action="getDrinkingChallenge" class="btn btn-gold">Get Challenge</button>
     <p id="drinking-challenge" style="margin-top:10px; font-weight:bold;"></p>
   </div>
 </section>
@@ -718,9 +718,9 @@
       <option value="20">20 minutes</option>
       <option value="30">30 minutes</option>
     </select>
-    <button onclick="getChallenge()" class="btn btn-gold">Generate Challenge</button>
-    <button onclick="skipChallenge()" class="btn btn-outline-gold ml-6">Skip</button>
-    <button onclick="markChallengeComplete()" class="btn btn-outline-light ml-6">Mark Completed</button>
+    <button data-action="getChallenge" class="btn btn-gold">Generate Challenge</button>
+    <button data-action="skipChallenge" class="btn btn-outline-gold ml-6">Skip</button>
+    <button data-action="markChallengeComplete" class="btn btn-outline-light ml-6">Mark Completed</button>
     <p id="random-challenge" style="margin-top:10px; font-weight:bold;"></p>
     <p id="random-challenge-meta" style="margin-top:6px; opacity:.6;"></p>
     <p id="challenge-timer" class="challenge-timer challenge-timer-idle" aria-live="polite">No active challenge timer.</p>
@@ -737,13 +737,13 @@
     <p style="opacity:.7; margin-bottom:10px;">Set team names, assign current challenge, and track score.</p>
     <input type="text" id="team-a-name" placeholder="Team A name" class="form-input">
     <input type="text" id="team-b-name" placeholder="Team B name" class="form-input">
-    <button onclick="saveTeamNames()" class="btn btn-gold btn-sm">Save Teams</button>
+    <button data-action="saveTeamNames" class="btn btn-gold btn-sm">Save Teams</button>
     <p id="team-scoreboard" style="margin-top:12px; font-weight:600;"></p>
-    <button onclick="addTeamPoint('A')" class="btn btn-gold btn-sm mr-6">+1 Team A</button>
-    <button onclick="addTeamPoint('B')" class="btn btn-gold btn-sm">+1 Team B</button>
-    <button onclick="resetTeamScores()" class="btn btn-outline-light btn-sm ml-6">Reset</button>
+    <button data-action="addTeamPoint" data-action-arg="A" class="btn btn-gold btn-sm mr-6">+1 Team A</button>
+    <button data-action="addTeamPoint" data-action-arg="B" class="btn btn-gold btn-sm">+1 Team B</button>
+    <button data-action="resetTeamScores" class="btn btn-outline-light btn-sm ml-6">Reset</button>
     <p id="team-assignment" style="margin-top:12px; opacity:.75;"></p>
-    <button onclick="assignCurrentChallengeToRandomTeam()" class="btn btn-outline-gold btn-sm">Assign Current Challenge</button>
+    <button data-action="assignCurrentChallengeToRandomTeam" class="btn btn-outline-gold btn-sm">Assign Current Challenge</button>
   </div>
 </section>
 
@@ -757,8 +757,8 @@
       <option value="A">Team A</option>
       <option value="B">Team B</option>
     </select>
-    <button onclick="addMission()" class="btn btn-gold btn-sm">Add Mission</button>
-    <button onclick="resetMissions()" class="btn btn-outline-light btn-sm ml-6">Reset Missions</button>
+    <button data-action="addMission" class="btn btn-gold btn-sm">Add Mission</button>
+    <button data-action="resetMissions" class="btn btn-outline-light btn-sm ml-6">Reset Missions</button>
     <p id="mission-msg" style="margin-top:10px;"></p>
     <div id="mission-board" style="margin-top:14px; text-align:left;"></div>
   </div>
@@ -771,8 +771,8 @@
     <select id="expense-payer" class="form-input"></select>
     <input type="number" id="expense-amount" min="0.01" step="0.01" placeholder="Amount" class="form-input" style="width:140px;">
     <input type="text" id="expense-note" placeholder="What was it for?" class="form-input" style="width:45%;">
-    <button onclick="addExpense()" class="btn btn-gold btn-sm">Add Expense</button>
-    <button onclick="clearExpenses()" class="btn btn-outline-light btn-sm ml-6">Clear</button>
+    <button data-action="addExpense" class="btn btn-gold btn-sm">Add Expense</button>
+    <button data-action="clearExpenses" class="btn btn-outline-light btn-sm ml-6">Clear</button>
     <p id="expense-msg" style="margin-top:10px;"></p>
     <div id="expense-summary" style="margin-top:14px; text-align:left;"></div>
     <div id="expense-list" style="margin-top:8px; text-align:left;"></div>
@@ -783,7 +783,7 @@
   <h2 class="section-title fade-in">Punishment Wheel</h2>
   <div class="info-card fade-in" style="text-align:center;">
     <p>Failed or refused challenge? Spin for punishment.</p>
-    <button onclick="spinPunishmentWheel()" class="btn btn-gold">Spin Wheel</button>
+    <button data-action="spinPunishmentWheel" class="btn btn-gold">Spin Wheel</button>
     <p id="punishment-result" style="margin-top:12px; font-weight:bold;"></p>
     <p id="punishment-history" style="margin-top:8px; opacity:.65;"></p>
   </div>
@@ -800,7 +800,7 @@
   <h2 class="section-title fade-in">Stag Do Poll</h2>
   <div class="info-card fade-in" style="text-align:center;">
     <h3>Choose a poll and vote</h3>
-    <select id="poll-topic" onchange="selectPollTopic()" class="form-input"></select>
+    <select id="poll-topic" data-change-action="selectPollTopic" class="form-input"></select>
     <p id="poll-question" style="margin-top:8px; opacity:.8;"></p>
     <div id="poll-options" style="margin-top:8px;"></div>
     <div id="poll-results" style="display:block; margin-top:20px;">
@@ -814,7 +814,7 @@
   <h2 class="section-title fade-in">End-of-Night Wrap</h2>
   <div class="info-card fade-in" style="text-align:center;">
     <p>Generate a quick summary card for the night.</p>
-    <button onclick="generateWrapUp()" class="btn btn-gold">Generate Wrap-Up</button>
+    <button data-action="generateWrapUp" class="btn btn-gold">Generate Wrap-Up</button>
     <div id="wrap-output" style="margin-top:14px; text-align:left; opacity:.9;"></div>
   </div>
 </section>
@@ -824,12 +824,16 @@
   <p style="opacity:.5; max-width:420px; margin:0 auto; line-height:1.7; font-size:14px;">
     3 nights. 6 lads. Zero hold bags. Maximum carnage. See you at Belfast International, 4am sharp.
   </p>
-  <a href="#" class="rsvp-btn" role="button" aria-label="Confirm attendance" onclick="celebrateRSVP(); return false;">I'M IN</a>
+  <a href="#" class="rsvp-btn" role="button" aria-label="Confirm attendance" data-action="celebrateRSVP">I'M IN</a>
+  <div class="rsvp-extras">
+    <button type="button" class="btn btn-outline-gold btn-sm" data-action="downloadStagIcs" aria-label="Add trip to calendar">&#x1F4C5; Add to Calendar</button>
+    <button type="button" class="btn btn-outline-gold btn-sm" data-action="shareStagProgress" aria-label="Share countdown">&#x1F4E4; Share Countdown</button>
+  </div>
 </div>
 
 </main>
 
-<button id="scroll-top-btn" type="button" aria-label="Scroll to top" title="Back to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">&uarr;</button>
+<button id="scroll-top-btn" type="button" aria-label="Scroll to top" title="Back to top" data-action="scrollToTop">&uarr;</button>
 <div id="toast-container"></div>
 <canvas id="confetti-canvas"></canvas>
 
@@ -839,7 +843,7 @@
     <span class="footer-separator">&#183;</span>
     <span>Ross Wightman</span>
     <span class="footer-separator">&#183;</span>
-    <a href="#" onclick="window.scrollTo({top:0,behavior:'smooth'}); return false;" class="footer-top-link">Back to Top &uarr;</a>
+    <a href="#" data-action="scrollToTop" class="footer-top-link">Back to Top &uarr;</a>
   </div>
 </footer>
 

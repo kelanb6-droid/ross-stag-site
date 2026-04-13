@@ -3861,3 +3861,121 @@
       obs.observe(el);
     }
   });
+
+  // ── Data-action delegation (replaces inline onclick for CSP) ──
+  (function wireDataActionDelegation() {
+    function scrollToTop() {
+      try { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+      catch (_) { window.scrollTo(0, 0); }
+    }
+    // Whitelist of actions callable from data-action attributes.
+    const actions = {
+      toggleCodeVisibility: typeof toggleCodeVisibility === 'function' ? toggleCodeVisibility : null,
+      crewLogin: typeof crewLogin === 'function' ? crewLogin : null,
+      crewLogout: typeof crewLogout === 'function' ? crewLogout : null,
+      toggleTheme: typeof toggleTheme === 'function' ? toggleTheme : null,
+      saveMyCrewPersonalization: typeof saveMyCrewPersonalization === 'function' ? saveMyCrewPersonalization : null,
+      resetMyCrewPersonalization: typeof resetMyCrewPersonalization === 'function' ? resetMyCrewPersonalization : null,
+      suggestChallenge: typeof suggestChallenge === 'function' ? suggestChallenge : null,
+      suggestScheduleItem: typeof suggestScheduleItem === 'function' ? suggestScheduleItem : null,
+      suggestSiteChange: typeof suggestSiteChange === 'function' ? suggestSiteChange : null,
+      suggestActivity: typeof suggestActivity === 'function' ? suggestActivity : null,
+      addCrewCodeByJoshua: typeof addCrewCodeByJoshua === 'function' ? addCrewCodeByJoshua : null,
+      getDrinkingChallenge: typeof getDrinkingChallenge === 'function' ? getDrinkingChallenge : null,
+      getChallenge: typeof getChallenge === 'function' ? getChallenge : null,
+      skipChallenge: typeof skipChallenge === 'function' ? skipChallenge : null,
+      markChallengeComplete: typeof markChallengeComplete === 'function' ? markChallengeComplete : null,
+      saveTeamNames: typeof saveTeamNames === 'function' ? saveTeamNames : null,
+      addTeamPoint: typeof addTeamPoint === 'function' ? addTeamPoint : null,
+      resetTeamScores: typeof resetTeamScores === 'function' ? resetTeamScores : null,
+      assignCurrentChallengeToRandomTeam: typeof assignCurrentChallengeToRandomTeam === 'function' ? assignCurrentChallengeToRandomTeam : null,
+      addMission: typeof addMission === 'function' ? addMission : null,
+      resetMissions: typeof resetMissions === 'function' ? resetMissions : null,
+      addExpense: typeof addExpense === 'function' ? addExpense : null,
+      clearExpenses: typeof clearExpenses === 'function' ? clearExpenses : null,
+      spinPunishmentWheel: typeof spinPunishmentWheel === 'function' ? spinPunishmentWheel : null,
+      selectPollTopic: typeof selectPollTopic === 'function' ? selectPollTopic : null,
+      generateWrapUp: typeof generateWrapUp === 'function' ? generateWrapUp : null,
+      celebrateRSVP: typeof celebrateRSVP === 'function' ? celebrateRSVP : null,
+      scrollToTop: scrollToTop,
+      shareStagProgress: typeof shareStagProgress === 'function' ? shareStagProgress : null,
+      downloadStagIcs: typeof downloadStagIcs === 'function' ? downloadStagIcs : null
+    };
+    function dispatch(attr, event) {
+      const el = event.target.closest('[' + attr + ']');
+      if (!el) return;
+      const name = el.getAttribute(attr);
+      const fn = actions[name];
+      if (typeof fn !== 'function') return;
+      const arg = el.getAttribute('data-action-arg');
+      if (el.tagName === 'A' && attr === 'data-action') event.preventDefault();
+      try { arg ? fn(arg) : fn(); }
+      catch (err) { /* swallow to avoid halting page on handler error */ }
+    }
+    document.addEventListener('click', function (e) { dispatch('data-action', e); });
+    document.addEventListener('change', function (e) { dispatch('data-change-action', e); });
+
+    // ── Keyboard shortcuts for the Challenge Generator ──
+    document.addEventListener('keydown', function (e) {
+      if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.altKey) return;
+      const tag = (e.target && e.target.tagName) || '';
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (e.target && e.target.isContentEditable)) return;
+      if (e.key === 'g' && actions.getChallenge) { e.preventDefault(); actions.getChallenge(); }
+      else if (e.key === 's' && actions.skipChallenge) { e.preventDefault(); actions.skipChallenge(); }
+      else if (e.key === 'c' && actions.markChallengeComplete) { e.preventDefault(); actions.markChallengeComplete(); }
+    });
+  })();
+
+  // ── Calendar ICS download ──
+  function downloadStagIcs() {
+    const lines = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//Barcelona Stag 2026//EN',
+      'CALSCALE:GREGORIAN',
+      'METHOD:PUBLISH',
+      'BEGIN:VEVENT',
+      'UID:ross-stag-2026@barcelona',
+      'DTSTAMP:' + new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z',
+      'DTSTART:20260503T061000',
+      'DTEND:20260506T120000',
+      'SUMMARY:Ross\'s Stag Do - Barcelona',
+      'DESCRIPTION:3 nights\\, 6 lads\\, maximum fun. Belfast International 4am sharp.',
+      'LOCATION:Barcelona\\, Spain',
+      'END:VEVENT',
+      'END:VCALENDAR'
+    ];
+    const blob = new Blob([lines.join('\r\n')], { type: 'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'ross-stag-barcelona-2026.ics';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100);
+  }
+  window.downloadStagIcs = downloadStagIcs;
+
+  // ── Share stag progress ──
+  function shareStagProgress() {
+    const target = new Date('2026-05-03T06:10:00').getTime();
+    const diff = target - Date.now();
+    const days = Math.max(0, Math.floor(diff / 86400000));
+    const text = 'Only ' + days + ' days until Ross\'s Barcelona Stag. Vamos!';
+    if (navigator.share) {
+      navigator.share({ title: 'Barcelona Stag 2026', text: text, url: location.href })
+        .catch(function () { /* user cancelled */ });
+    } else if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text + ' ' + location.href)
+        .then(function () { if (typeof showToast === 'function') showToast('Copied to clipboard!', 3000); })
+        .catch(function () { /* ignore */ });
+    }
+  }
+  window.shareStagProgress = shareStagProgress;
+
+  // ── Service worker registration (best effort) ──
+  if ('serviceWorker' in navigator && location.protocol === 'https:') {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js').catch(function () { /* ignore */ });
+    });
+  }

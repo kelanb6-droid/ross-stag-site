@@ -11,5 +11,6 @@
 !.github/
 !.github/**
 !.nojekyll
+!sw.js
 
 
