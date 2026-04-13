@@ -937,7 +937,11 @@
     return value === groomBday || allowedCrewBdays.has(value);
   }
 
+  let lastLocalEditAt = 0;
+  const LOCAL_EDIT_GUARD_MS = 2500;
+
   function saveChallengeData() {
+    lastLocalEditAt = Date.now();
     saveJSON('pendingChallenges', pendingChallenges);
     saveJSON('approvedChallenges', approvedChallenges);
     saveJSON('challengeVoteLog', challengeVoteLog);
@@ -1004,7 +1008,16 @@
     }
   }
 
-  function applyChallengeStatePayload(payload) {
+  function applyChallengeStatePayload(payload, options) {
+    // Skip applying remote state if the user has edited within the last
+    // LOCAL_EDIT_GUARD_MS — prevents remote snapshots from clobbering
+    // in-flight local edits.  Forced applies (options.force) bypass this.
+    const force = options && options.force;
+    if (!force && Date.now() - lastLocalEditAt < LOCAL_EDIT_GUARD_MS) {
+      // Re-queue a sync so our local edits get pushed promptly.
+      if (typeof queueChallengeStateSync === 'function') queueChallengeStateSync(false);
+      return;
+    }
     const safe = sanitizeCloudState(payload);
     pendingChallenges = safe.pendingChallenges;
     approvedChallenges = safe.approvedChallenges;
@@ -1225,7 +1238,7 @@
       const body = await res.json();
       const row = Array.isArray(body) ? body[0] : null;
       if (!row || !row.state || typeof row.state !== 'object') return false;
-      applyChallengeStatePayload(row.state);
+      applyChallengeStatePayload(row.state, { force: true });
       lastChallengeSyncHash = hashChallengePayload(getChallengeStatePayload());
       saveJSON('pendingChallenges', pendingChallenges);
       saveJSON('approvedChallenges', approvedChallenges);

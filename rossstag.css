@@ -476,7 +476,7 @@
   }
   .toggle-vis-btn {
     position: absolute;
-    right: 6px;
+    right: 4px;
     top: 50%;
     transform: translateY(-50%);
     background: none !important;
@@ -484,8 +484,13 @@
     box-shadow: none !important;
     cursor: pointer;
     font-size: 18px;
-    padding: 4px 8px;
-    opacity: .5;
+    padding: 10px 12px;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: .55;
     transition: opacity .2s;
   }
   .toggle-vis-btn:hover {
@@ -1697,3 +1702,10 @@
       scroll-behavior: auto !important;
     }
   }
+
+  /* ── Light theme polish for error/offline/timer states ── */
+  .light-theme .login-msg { color: var(--error); }
+  .light-theme #offline-indicator { background: rgba(201,56,42,.92); color: #fff; }
+  .light-theme .challenge-timer-expired { color: var(--error); }
+  .light-theme .challenge-timer-warning { color: #C07A1F; }
+  .light-theme .challenge-timer-bar { background: rgba(0,0,0,.08); }
