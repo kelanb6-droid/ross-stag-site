@@ -1139,6 +1139,7 @@
 
   function refreshChallengeUiFromState() {
     refreshPendingChallengeViews();
+    displayApprovedChallenges();
     updateTeamBattleUI();
     renderMissionBoard();
     populateExpensePayerOptions();
@@ -1624,11 +1625,6 @@
     const todayKey = getTodayKey();
     const submissionKey = crew + ':' + todayKey;
     const submissionsToday = challengeSubmissionLog[submissionKey] || 0;
-    if (submissionsToday >= 4) {
-      msg.textContent = 'Daily limit reached (4 challenges per crew member).';
-      msg.style.color = 'var(--error)';
-      return;
-    }
     challengeSubmissionLog[submissionKey] = submissionsToday + 1;
     approvedChallenges.push({
       id: Date.now().toString() + Math.random().toString(36).slice(2, 7),
